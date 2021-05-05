@@ -1,0 +1,55 @@
+{
+  "name": "@vue-storefront/magento-theme",
+  "version": "1.0.0-beta.2",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "build": "nuxt build -m",
+    "build:analyze": "nuxt build -a -m",
+    "dev": "nuxt",
+    "generate": "nuxt generate",
+    "lint": "eslint . --ext .ts,.vue",
+    "lint:fix": "eslint . --ext .ts,.vue --fix",
+    "precommit": "lint-staged",
+    "start": "nuxt start",
+    "test": "jest",
+    "update:check": "ncu",
+    "update:update": "ncu -u"
+  },
+  "dependencies": {
+    "@nuxtjs/pwa": "^3.3.5",
+    "@nuxtjs/style-resources": "^1.0.0",
+    "@storefront-ui/vue": "^0.10.5",
+    "@vue-storefront/core": "^2.3.0",
+    "@vue-storefront/magento": "^1.0.0-beta.1",
+    "@vue-storefront/middleware": "^2.3.0",
+    "@vue-storefront/nuxt": "^2.3.0",
+    "@vue-storefront/nuxt-theme": "^2.3.0",
+    "cookie-universal-nuxt": "^2.1.4",
+    "core-js": "^3.11.2",
+    "lodash.debounce": "^4.0.8",
+    "lodash.merge": "^4.6.2",
+    "nuxt": "^2.15.4",
+    "nuxt-i18n": "^6.26.0",
+    "vee-validate": "^3.4.5",
+    "vue-dompurify-html": "^2.3.0",
+    "vue-lazy-hydration": "^2.0.0-beta.4",
+    "vue-scrollto": "^2.20.0",
+    "vue": "^2.6.12"
+  },
+  "devDependencies": {
+    "@nuxt/types": "latest",
+    "@nuxt/typescript-build": "latest",
+    "@nuxtjs/pwa": "^3.3.5",
+    "@vue/test-utils": "^1.2.0",
+    "babel-core": "7.0.0-bridge.0",
+    "dotenv": "^8.2.0",
+    "ejs": "^3.1.6",
+    "rollup-plugin-terser": "^7.0.2",
+    "ts-loader": "^8.1.0",
+    "webpack": "^4.46.0"
+  },
+  "peerDependencies": {
+    "@vue/composition-api": ">= 1.0.0"
+  }
+}
