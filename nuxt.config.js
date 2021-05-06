@@ -1,7 +1,8 @@
 import webpack from 'webpack';
 
 export default {
-  mode: 'universal',
+  ssr: true,
+  dev: process.env.NODE_ENV !== 'production',
   server: {
     port: 3000,
     host: '0.0.0.0',
@@ -52,9 +53,9 @@ export default {
     },
   ],
   buildModules: [
-    // to core
     '@nuxt/typescript-build',
     '@nuxtjs/style-resources',
+    '@nuxtjs/pwa',
     ['@vue-storefront/nuxt', {
       useRawSource: {
         dev: [
@@ -147,6 +148,11 @@ export default {
     scss: [require.resolve('@storefront-ui/shared/styles/_helpers.scss', { paths: [process.cwd()] })],
   },
   build: {
+    babel: {
+      plugins: [
+        ['@babel/plugin-proposal-private-methods', { loose: true }],
+      ],
+    },
     extend(config, ctx) {
       // eslint-disable-next-line no-param-reassign
       config.devtool = ctx.isClient ? 'eval-source-map' : 'inline-source-map';
@@ -163,13 +169,5 @@ export default {
         }),
       }),
     ],
-  },
-  router: {
-    scrollBehavior(_to, _from, savedPosition) {
-      return savedPosition || {
-        x: 0,
-        y: 0,
-      };
-    },
   },
 };
