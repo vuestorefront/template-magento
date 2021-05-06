@@ -53,7 +53,6 @@ export default {
     },
   ],
   buildModules: [
-    // to core
     '@nuxt/typescript-build',
     '@nuxtjs/style-resources',
     '@nuxtjs/pwa',
