@@ -71,11 +71,9 @@ export default {
     // to core
     '@nuxt/typescript-build',
     '@nuxtjs/style-resources',
+    // to core soon
     '@nuxtjs/pwa',
     ['@vue-storefront/nuxt', {
-      // @core-development-only-start
-      coreDevelopment: true,
-      // @core-development-only-end
       useRawSource: {
         dev: [
           '@vue-storefront/magento',
@@ -87,19 +85,7 @@ export default {
         ],
       },
     }],
-    // @core-development-only-start
-    ['@vue-storefront/nuxt-theme', {
-      generate: {
-        replace: {
-          apiClient: '@vue-storefront/magento-api',
-          composables: '@vue-storefront/magento',
-        },
-      },
-    }],
-    // @core-development-only-end
-    /* project-only-start
     ['@vue-storefront/nuxt-theme'],
-    project-only-end */
     ['@vue-storefront/magento/nuxt', {
       i18n: {
         useNuxtI18nConfig: true,
