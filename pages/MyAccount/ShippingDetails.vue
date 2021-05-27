@@ -1,38 +1,46 @@
 <template>
   <transition name="fade">
     <SfTabs
-      v-if="edittingAddress"
+      v-if="editingAddress"
       key="edit-address"
       :open-tab="1"
       class="tab-orphan"
     >
       <SfTab
-        :title="isNewAddress ? 'Add the address' : 'Update the address'">
+        :title="isNewAddress ? 'Add the address' : 'Update the address'"
+      >
         <p class="message">
           {{ $t('Contact details updated') }}
         </p>
 
         <ShippingAddressForm
           :address="activeAddress"
-          :isNew="isNewAddress"
-          @submit="saveAddress" />
+          :is-new="isNewAddress"
+          @submit="saveAddress"
+        />
       </SfTab>
     </SfTabs>
 
     <SfTabs
       v-else
-      :open-tab="1"
       key="address-list"
-      class="tab-orphan">
+      :open-tab="1"
+      class="tab-orphan"
+    >
       <SfTab title="Shipping details">
         <p class="message">
           {{ $t('Manage shipping addresses') }}
         </p>
-        <transition-group tag="div" name="fade" class="shipping-list">
+        <transition-group
+          tag="div"
+          name="fade"
+          class="shipping-list"
+        >
           <div
             v-for="address in addresses"
             :key="userShippingGetters.getId(address)"
-            class="shipping">
+            class="shipping"
+          >
             <div class="shipping__content">
               <div class="shipping__address">
                 <UserShippingAddress :address="address" />
@@ -48,13 +56,16 @@
                 @click="removeAddress(address)"
               />
               <SfButton
-                @click="changeAddress(address)">
+                @click="changeAddress(address)"
+              >
                 {{ $t('Change') }}
               </SfButton>
 
               <SfButton
+                v-if="!userShippingGetters.isDefault(address)"
                 class="color-light shipping__button-delete desktop-only"
-                @click="removeAddress(address)">
+                @click="removeAddress(address)"
+              >
                 {{ $t('Delete') }}
               </SfButton>
             </div>
@@ -62,7 +73,8 @@
         </transition-group>
         <SfButton
           class="action-button"
-          @click="changeAddress()">
+          @click="changeAddress()"
+        >
           {{ $t('Add new address') }}
         </SfButton>
       </SfTab>
@@ -73,13 +85,13 @@
 import {
   SfTabs,
   SfButton,
-  SfIcon
+  SfIcon,
 } from '@storefront-ui/vue';
-import UserShippingAddress from '~/components/UserShippingAddress';
-import ShippingAddressForm from '~/components/MyAccount/ShippingAddressForm';
 import { useUserShipping, userShippingGetters } from '@vue-storefront/magento';
 import { ref, computed } from '@vue/composition-api';
 import { onSSR } from '@vue-storefront/core';
+import ShippingAddressForm from '~/components/MyAccount/ShippingAddressForm';
+import UserShippingAddress from '~/components/UserShippingAddress';
 
 export default {
   name: 'ShippingDetails',
@@ -88,27 +100,38 @@ export default {
     SfButton,
     SfIcon,
     UserShippingAddress,
-    ShippingAddressForm
+    ShippingAddressForm,
   },
   setup() {
-    const { shipping, load: loadUserShipping, addAddress, deleteAddress, updateAddress } = useUserShipping();
+    const {
+      shipping,
+      load: loadUserShipping,
+      addAddress,
+      deleteAddress,
+      updateAddress,
+    } = useUserShipping();
     const addresses = computed(() => userShippingGetters.getAddresses(shipping.value));
-    const edittingAddress = ref(false);
-    const activeAddress = ref(undefined);
+    const editingAddress = ref(false);
+    const activeAddress = ref();
     const isNewAddress = computed(() => !activeAddress.value);
 
-    const changeAddress = (address = undefined) => {
+    const changeAddress = (address) => {
       activeAddress.value = address;
-      edittingAddress.value = true;
+      editingAddress.value = true;
     };
 
-    const removeAddress = address => deleteAddress({ address });
+    const removeAddress = async (address) => {
+      const isDefault = userShippingGetters.isDefault(address);
+      if (!isDefault) {
+        await deleteAddress({ address });
+      }
+    };
 
     const saveAddress = async ({ form, onComplete, onError }) => {
       try {
         const actionMethod = isNewAddress.value ? addAddress : updateAddress;
         const data = await actionMethod({ address: form });
-        edittingAddress.value = false;
+        editingAddress.value = false;
         activeAddress.value = undefined;
         await onComplete(data);
       } catch (error) {
@@ -127,11 +150,11 @@ export default {
       saveAddress,
       userShippingGetters,
       addresses,
-      edittingAddress,
+      editingAddress,
       activeAddress,
-      isNewAddress
+      isNewAddress,
     };
-  }
+  },
 };
 </script>
 
@@ -143,9 +166,11 @@ export default {
   font-size: var(--font-size--base);
   margin: 0 0 var(--spacer-base);
 }
+
 .shipping-list {
   margin-bottom: var(--spacer-base);
 }
+
 .shipping {
   display: flex;
   padding: var(--spacer-xl) 0;
@@ -154,6 +179,7 @@ export default {
   &:last-child {
     border-bottom: 1px solid var(--c-light);
   }
+
   &__content {
     flex: 1;
     color: var(--c-text);
@@ -161,6 +187,7 @@ export default {
     font-weight: 300;
     line-height: 1.6;
   }
+
   &__actions {
     flex: 1;
     display: flex;
@@ -173,29 +200,35 @@ export default {
       justify-content: flex-end;
     }
   }
+
   &__button-delete {
     color: var(--c-link);
     @include for-desktop {
       margin-left: var(--spacer-base);
     }
   }
+
   &__address {
     margin: 0;
+
     p {
       margin: 0;
     }
   }
+
   &__client-name {
     font-size: var(--font-size--base);
     font-weight: 500;
   }
 }
+
 .action-button {
   width: 100%;
   @include for-desktop {
     width: auto;
   }
 }
+
 .tab-orphan {
   @include for-mobile {
     ::v-deep .sf-tabs {

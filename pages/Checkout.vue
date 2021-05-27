@@ -30,32 +30,34 @@
   </div>
 </template>
 <script>
-
 import { SfSteps, SfButton } from '@storefront-ui/vue';
+import { computed, ref } from '@vue/composition-api';
 import CartPreview from '~/components/Checkout/CartPreview';
-import { computed } from '@vue/composition-api';
-
-const STEPS = {
-  shipping: 'Shipping',
-  billing: 'Billing',
-  payment: 'Payment'
-};
+import { useVueRouter } from '~/helpers/hooks/useVueRouter';
 
 export default {
   name: 'Checkout',
   components: {
     SfButton,
     SfSteps,
-    CartPreview
+    CartPreview,
   },
   setup(props, context) {
-    const currentStep = computed(() => context.root.$route.path.split('/').pop());
-    const currentStepIndex = computed(() => Object.keys(STEPS).findIndex(s => s === currentStep.value));
+    const { route, router } = useVueRouter();
+    const currentStep = computed(() => route.path.split('/').pop());
+    const STEPS = ref({
+      'user-account': 'User Account',
+      shipping: 'Shipping',
+      billing: 'Billing',
+      payment: 'Payment',
+    });
+    const currentStepIndex = computed(() => Object.keys(STEPS.value)
+      .indexOf(currentStep.value));
     const isThankYou = computed(() => currentStep.value === 'thank-you');
 
     const handleStepClick = (stepIndex) => {
-      const key = Object.keys(STEPS)[stepIndex];
-      context.root.$router.push(`/checkout/${key}`);
+      const key = Object.keys(STEPS.value)[stepIndex];
+      router.push(`/checkout/${key}`);
     };
 
     return {
@@ -63,9 +65,9 @@ export default {
       STEPS,
       currentStepIndex,
       isThankYou,
-      currentStep
+      currentStep,
     };
-  }
+  },
 };
 </script>
 
@@ -77,22 +79,26 @@ export default {
     margin: 0 auto;
   }
 }
+
 .checkout {
   @include for-desktop {
     display: flex;
   }
+
   &__main {
     @include for-desktop {
       flex: 1;
       padding: var(--spacer-xl) 0 0 0;
     }
   }
+
   &__aside {
     @include for-desktop {
       flex: 0 0 25.5rem;
       margin: 0 0 0 4.25rem;
     }
   }
+
   &__steps {
     --steps-content-padding: 0 var(--spacer-base);
     @include for-desktop {

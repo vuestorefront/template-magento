@@ -13,36 +13,52 @@
         @click:close="toggleLoginModal"
       />
     </template>
-    <transition name="sf-fade" mode="out-in">
+    <transition
+      name="sf-fade"
+      mode="out-in"
+    >
       <div v-if="isLogin">
-        <ValidationObserver v-slot="{ handleSubmit }" key="log-in">
-          <form class="form" @submit.prevent="handleSubmit(handleLogin)">
-            <ValidationProvider rules="required|email" v-slot="{ errors }">
+        <ValidationObserver
+          v-slot="{ handleSubmit }"
+          key="log-in"
+        >
+          <form
+            class="form"
+            @submit.prevent="handleSubmit(handleLogin)"
+          >
+            <ValidationProvider
+              v-slot="{ errors }"
+              rules="required|email"
+            >
               <SfInput
-                v-e2e="'login-modal-email'"
                 v-model="form.username"
+                v-e2e="'login-modal-email'"
                 :valid="!errors[0]"
-                :errorMessage="errors[0]"
+                :error-message="errors[0]"
                 name="email"
                 label="Your email"
                 class="form__element"
               />
             </ValidationProvider>
-            <ValidationProvider rules="required" v-slot="{ errors }">
+            <ValidationProvider
+              v-slot="{ errors }"
+              rules="required|password"
+            >
               <SfInput
-                v-e2e="'login-modal-password'"
                 v-model="form.password"
+                v-e2e="'login-modal-password'"
                 :valid="!errors[0]"
-                :errorMessage="errors[0]"
+                :error-message="errors[0]"
                 name="password"
                 label="Password"
                 type="password"
+                has-show-password
                 class="form__element"
               />
             </ValidationProvider>
             <SfCheckbox
-              v-e2e="'login-modal-remember-me'"
               v-model="rememberMe"
+              v-e2e="'login-modal-remember-me'"
               name="remember-me"
               label="Remember me"
               class="form__element checkbox"
@@ -50,12 +66,16 @@
             <div v-if="error.login">
               {{ error.login }}
             </div>
-            <SfButton v-e2e="'login-modal-submit'"
+            <SfButton
+              v-e2e="'login-modal-submit'"
               type="submit"
               class="sf-button--full-width form__button"
               :disabled="loading"
             >
-              <SfLoader :class="{ loader: loading }" :loading="loading">
+              <SfLoader
+                :class="{ loader: loading }"
+                :loading="loading"
+              >
                 <div>{{ $t('Login') }}</div>
               </SfLoader>
             </SfButton>
@@ -67,66 +87,97 @@
           </SfButton>
         </div>
         <div class="bottom">
-          <p class="bottom__paragraph">{{ $t('No account') }}</p>
-          <SfButton class="sf-button--text" @click="setIsLoginValue(false)">
+          <p class="bottom__paragraph">
+            {{ $t('No account') }}
+          </p>
+          <SfButton
+            class="sf-button--text"
+            @click="setIsLoginValue(false)"
+          >
             {{ $t('Register today') }}
           </SfButton>
         </div>
       </div>
-      <div v-else class="form">
-        <ValidationObserver v-slot="{ handleSubmit }" key="sign-up">
-          <form class="form" @submit.prevent="handleSubmit(handleRegister)" autocomplete="off">
-            <ValidationProvider rules="required|email" v-slot="{ errors }">
+      <div
+        v-else
+        class="form"
+      >
+        <ValidationObserver
+          v-slot="{ handleSubmit, invalid }"
+          key="sign-up"
+        >
+          <form
+            class="form"
+            autocomplete="off"
+            @submit.prevent="handleSubmit(handleRegister)"
+          >
+            <ValidationProvider
+              v-slot="{ errors }"
+              rules="required|email"
+            >
               <SfInput
-                v-e2e="'login-modal-email'"
                 v-model="form.email"
+                v-e2e="'login-modal-email'"
                 :valid="!errors[0]"
-                :errorMessage="errors[0]"
+                :error-message="errors[0]"
                 name="email"
                 label="Your email"
                 class="form__element"
               />
             </ValidationProvider>
-            <ValidationProvider rules="required" v-slot="{ errors }">
+            <ValidationProvider
+              v-slot="{ errors }"
+              rules="required"
+            >
               <SfInput
-                v-e2e="'login-modal-firstName'"
                 v-model="form.firstName"
+                v-e2e="'login-modal-firstName'"
                 :valid="!errors[0]"
-                :errorMessage="errors[0]"
+                :error-message="errors[0]"
                 name="first-name"
                 label="First Name"
                 class="form__element"
               />
             </ValidationProvider>
-            <ValidationProvider rules="required" v-slot="{ errors }">
+            <ValidationProvider
+              v-slot="{ errors }"
+              rules="required"
+            >
               <SfInput
-                v-e2e="'login-modal-lastName'"
                 v-model="form.lastName"
+                v-e2e="'login-modal-lastName'"
                 :valid="!errors[0]"
-                :errorMessage="errors[0]"
+                :error-message="errors[0]"
                 name="last-name"
                 label="Last Name"
                 class="form__element"
               />
             </ValidationProvider>
-            <ValidationProvider rules="required" v-slot="{ errors }">
+            <ValidationProvider
+              v-slot="{ errors }"
+              rules="required|password"
+            >
               <SfInput
-                v-e2e="'login-modal-password'"
                 v-model="form.password"
+                v-e2e="'login-modal-password'"
                 :valid="!errors[0]"
-                :errorMessage="errors[0]"
+                :error-message="errors[0]"
                 name="password"
                 label="Password"
                 type="password"
+                has-show-password
                 class="form__element"
               />
             </ValidationProvider>
-            <ValidationProvider :rules="{ required: { allowFalse: false } }" v-slot="{ errors }">
+            <ValidationProvider
+              v-slot="{ errors }"
+              :rules="{ required: { allowFalse: false } }"
+            >
               <SfCheckbox
-                v-e2e="'login-modal-create-account'"
                 v-model="createAccount"
+                v-e2e="'login-modal-create-account'"
                 :valid="!errors[0]"
-                :errorMessage="errors[0]"
+                :error-message="errors[0]"
                 name="create-account"
                 label="I want to create an account"
                 class="form__element"
@@ -139,9 +190,12 @@
               v-e2e="'login-modal-submit'"
               type="submit"
               class="sf-button--full-width form__button"
-              :disabled="loading"
+              :disabled="loading || !createAccount || invalid"
             >
-              <SfLoader :class="{ loader: loading }" :loading="loading">
+              <SfLoader
+                :class="{ loader: loading }"
+                :loading="loading"
+              >
                 <div>{{ $t('Create an account') }}</div>
               </SfLoader>
             </SfButton>
@@ -149,7 +203,11 @@
         </ValidationObserver>
         <div class="action">
           {{ $t('or') }}
-          <SfButton v-e2e="'login-modal-login-to-your-account'" class="sf-button--text" @click="setIsLoginValue(true)">
+          <SfButton
+            v-e2e="'login-modal-login-to-your-account'"
+            class="sf-button--text"
+            @click="setIsLoginValue(true)"
+          >
             {{ $t('login in to your account') }}
           </SfButton>
         </div>
@@ -159,7 +217,15 @@
 </template>
 <script>
 import { ref, watch, reactive } from '@vue/composition-api';
-import { SfModal, SfInput, SfButton, SfCheckbox, SfLoader, SfAlert, SfBar } from '@storefront-ui/vue';
+import {
+  SfModal,
+  SfInput,
+  SfButton,
+  SfCheckbox,
+  SfLoader,
+  SfAlert,
+  SfBar,
+} from '@storefront-ui/vue';
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
 import { required, email } from 'vee-validate/dist/rules';
 import { useUser } from '@vue-storefront/magento';
@@ -167,12 +233,20 @@ import { useUiState } from '~/composables';
 
 extend('email', {
   ...email,
-  message: 'Invalid email'
+  message: 'Invalid email',
 });
 
 extend('required', {
   ...required,
-  message: 'This field is required'
+  message: 'This field is required',
+});
+
+extend('password', {
+  message: 'The password must contain at least: 1 uppercase letter, 1 lowercase letter, 1 number, and one special character (E.g. , . _ & ? etc)',
+  validate: (value) => {
+    const strongRegex = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])(?=.{8,})');
+    return strongRegex.test(value);
+  },
 });
 
 export default {
@@ -186,7 +260,7 @@ export default {
     SfAlert,
     ValidationProvider,
     ValidationObserver,
-    SfBar
+    SfBar,
   },
   setup() {
     const { isLoginModalOpen, toggleLoginModal } = useUiState();
@@ -194,11 +268,13 @@ export default {
     const isLogin = ref(false);
     const createAccount = ref(false);
     const rememberMe = ref(false);
-    const { register, login, loading, error: userError } = useUser();
+    const {
+      register, login, loading, error: userError,
+    } = useUser();
 
     const error = reactive({
       login: null,
-      register: null
+      register: null,
     });
 
     const resetErrorValues = () => {
@@ -247,9 +323,9 @@ export default {
       toggleLoginModal,
       handleLogin,
       handleRegister,
-      setIsLoginValue
+      setIsLoginValue,
     };
-  }
+  },
 };
 </script>
 
@@ -259,34 +335,42 @@ export default {
   --modal-index: 3;
   --overlay-z-index: 3;
 }
+
 .form {
   margin-top: var(--spacer-sm);
+
   &__element {
     margin: 0 0 var(--spacer-xl) 0;
   }
 }
+
 .action {
   display: flex;
   align-items: center;
   justify-content: center;
   margin: var(--spacer-xl) 0 var(--spacer-xl) 0;
   font: var(--font-weight--light) var(--font-size--base) / 1.6 var(--font-family--secondary);
+
   & > * {
     margin: 0 0 0 var(--spacer-xs);
   }
 }
+
 .action {
   margin: var(--spacer-xl) 0 var(--spacer-xl) 0;
 }
+
 .checkbox {
   margin-bottom: var(--spacer-2xl);
 }
+
 .bottom {
   text-align: center;
   margin-bottom: var(--spacer-lg);
   font-size: var(--h3-font-size);
   font-weight: var(--font-weight--semibold);
   font-family: var(--font-family--secondary);
+
   &__paragraph {
     color: var(--c-primary);
     margin: 0 0 var(--spacer-base) 0;

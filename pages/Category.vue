@@ -91,8 +91,8 @@
       <div class="sidebar desktop-only">
         <LazyHydrate when-idle>
           <SfLoader
-            :class="{ 'loading--categories': loading }"
-            :loading="loading"
+            :class="{ 'loading--categories': categoriesLoading }"
+            :loading="categoriesLoading"
           >
             <SfAccordion
               :open="activeCategory"
@@ -381,12 +381,14 @@ import {
   useCategory,
   categoryGetters,
   facetGetters,
-  useRouter,
+  useUrlResolver,
 } from '@vue-storefront/magento';
 import { onSSR } from '@vue-storefront/core';
 import LazyHydrate from 'vue-lazy-hydration';
 import Vue from 'vue';
+import findDeep from 'deepdash/findDeep';
 import { useUiHelpers, useUiState } from '~/composables';
+import { useVueRouter } from '../helpers/hooks/useVueRouter';
 
 // TODO(addToCart qty, horizontal): https://github.com/vuestorefront/storefront-ui/issues/1606
 export default {
@@ -411,23 +413,23 @@ export default {
   },
   transition: 'fade',
   setup(props, context) {
+    const { router, route } = useVueRouter();
+    const { path } = route;
     const th = useUiHelpers();
     const uiState = useUiState();
-    const { addItem: addItemToCart, isInCart } = useCart();
+    const { addItem: addItemToCartBase, isInCart } = useCart();
     const { addItem: addItemToWishlist } = useWishlist();
-    const { result, search, loading } = useFacet();
-    const { categories, search: categoriesSearch } = useCategory('categoryList');
+    const { result, search, loading } = useFacet(`facetId:${path}`);
+    const { categories, search: categoriesSearch, loading: categoriesLoading } = useCategory(`categoryList:${path}`);
 
-    // @TODO: Fix when URL Factory is Working
-    const { path } = context.root.$route;
-    const { search: routeSearch } = useRouter(`router:${path}`);
-    const currentCategory = ref({});
+    const { search: routeSearch, result: routeData } = useUrlResolver(`router:${path}`);
 
     const products = computed(() => facetGetters.getProducts(result.value));
 
     const categoryTree = computed(() => categoryGetters.getCategoryTree(
       categories.value?.[0],
-      currentCategory.value.entity_uid,
+      routeData.value.entity_uid,
+      true,
     ));
     const breadcrumbs = computed(() => facetGetters.getBreadcrumbs(result.value));
 
@@ -437,7 +439,7 @@ export default {
     const pagination = computed(() => facetGetters.getPagination(result.value));
 
     const activeCategory = computed(() => {
-      const { items } = categoryTree.value;
+      const items = categoryTree.value?.items;
 
       if (!items) {
         return '';
@@ -448,17 +450,43 @@ export default {
       return category?.label || items[0]?.label;
     });
 
+    const activeCategoryUid = (categoryUid) => {
+      const items = categoryTree.value?.items;
+
+      if (!items) {
+        return '';
+      }
+
+      const categoryDeep = findDeep(
+        categoryTree.value?.items,
+        (value, key, parentValue, _deepCtx) => {
+          const hasUid = key === '0' && value && Array.isArray(parentValue);
+
+          return (hasUid) ? value === (categoryUid) : false;
+        },
+      );
+
+      const categoryUidResult = categoryDeep?.parent.length === 1
+        ? categoryDeep?.parent[0]
+        : categoryDeep?.parent;
+
+      return categoryUidResult || items[0]?.uid;
+    };
+
     onSSR(async () => {
-      currentCategory.value = await routeSearch(path);
+      await Promise.all([
+        await routeSearch(path),
+        categoriesSearch({
+          pageSize: 100,
+        }),
+      ]);
 
-      await search({
-        ...th.getFacetsFromURL(),
-        categoryId: currentCategory.value.entity_uid,
-      });
-
-      await categoriesSearch({
-        pageSize: 100,
-      });
+      await Promise.all([
+        search({
+          ...th.getFacetsFromURL(),
+          categoryId: activeCategoryUid(routeData.value.entity_uid),
+        }),
+      ]);
     });
 
     const { changeFilters, isFacetColor } = useUiHelpers();
@@ -467,7 +495,7 @@ export default {
 
     onMounted(() => {
       context.root.$scrollTo(context.root.$el, 2000);
-      if (!facets.value.length) return;
+      if (facets.value.length === 0) return;
       selectedFilters.value = facets.value.reduce((prev, curr) => ({
         ...prev,
         [curr.id]: curr.options
@@ -504,6 +532,23 @@ export default {
       changeFilters(selectedFilters.value);
     };
 
+    const addItemToCart = async ({ product, quantity }) => {
+      // eslint-disable-next-line no-underscore-dangle
+      const productType = product.__typename;
+
+      switch (productType) {
+        case 'SimpleProduct':
+          await addItemToCartBase({ product, quantity });
+          break;
+        case 'BundleProduct':
+        case 'ConfigurableProduct':
+          await router.push(`/p/${productGetters.getProductSku(product)}${productGetters.getSlug(product, product.categories[0])}`);
+          break;
+        default:
+          throw new Error(`Product Type ${productType} not supported in add to cart yet`);
+      }
+    };
+
     return {
       ...uiState,
       activeCategory,
@@ -513,6 +558,7 @@ export default {
       breadcrumbs,
       categoryTree,
       categories,
+      categoriesLoading,
       clearFilters,
       facets,
       isFacetColor,

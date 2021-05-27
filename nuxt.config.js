@@ -1,7 +1,24 @@
 import webpack from 'webpack';
+import middleware from './middleware.config';
+import { getRoutes } from './routes';
+
+const {
+  integrations: {
+    magento: {
+      configuration: {
+        cookies,
+        externalCheckout,
+        tax,
+        defaultStore,
+        websites,
+      },
+    },
+  },
+} = middleware;
 
 export default {
-  mode: 'universal',
+  ssr: true,
+  dev: process.env.NODE_ENV !== 'production',
   server: {
     port: 3000,
     host: '0.0.0.0',
@@ -55,6 +72,7 @@ export default {
     // to core
     '@nuxt/typescript-build',
     '@nuxtjs/style-resources',
+    '@nuxtjs/pwa',
     ['@vue-storefront/nuxt', {
       useRawSource: {
         dev: [
@@ -72,6 +90,12 @@ export default {
       i18n: {
         useNuxtI18nConfig: true,
       },
+      cookies,
+      externalCheckout,
+      tax,
+      defaultStore,
+      websites,
+
     }],
   ],
   modules: [
@@ -147,6 +171,11 @@ export default {
     scss: [require.resolve('@storefront-ui/shared/styles/_helpers.scss', { paths: [process.cwd()] })],
   },
   build: {
+    babel: {
+      plugins: [
+        ['@babel/plugin-proposal-private-methods', { loose: true }],
+      ],
+    },
     extend(config, ctx) {
       // eslint-disable-next-line no-param-reassign
       config.devtool = ctx.isClient ? 'eval-source-map' : 'inline-source-map';
@@ -165,11 +194,8 @@ export default {
     ],
   },
   router: {
-    scrollBehavior(_to, _from, savedPosition) {
-      return savedPosition || {
-        x: 0,
-        y: 0,
-      };
+    extendRoutes(routes) {
+      getRoutes(`${__dirname}/_theme`).forEach((route) => routes.unshift(route));
     },
   },
 };
