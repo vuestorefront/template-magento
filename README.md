@@ -1,6 +1,16 @@
 # Vue-Storefront@Next Magento 2.x Theme
 
 > Magento 2.x theme
+## Configuration Setup
+1. Run `yarn` to install dependencies
+2. Copy `config/example.json` to an environment named config and update GraphQL Endpoint
+    ```
+    cp config/example.json config/dev.json
+    ```
+3. Update `magentoGraphQl` with url to Magento >=2.4.2 GraphQL endpoint, and the other variable accordingly to your store configurations.
+    ```
+    "magentoGraphQl": "https://{YOUR_SITE_FRONT_URL}/graphql",
+    ```
 
 ## Build Setup
 
