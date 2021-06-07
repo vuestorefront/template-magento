@@ -83,7 +83,7 @@ import {
   SfRadio,
   SfLoader,
 } from '@storefront-ui/vue';
-import { useGetShippingMethods } from '@vue-storefront/magento/src';
+import { useGetShippingMethods } from '@vue-storefront/magento';
 import { computed, defineComponent } from '@vue/composition-api';
 import getShippingMethodPrice from '~/helpers/checkout/getShippingMethodPrice';
 

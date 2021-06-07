@@ -107,28 +107,6 @@ export default {
   i18n: {
     currency: 'USD',
     country: 'US',
-    countries: [
-      {
-        name: 'US',
-        label: 'United States',
-        states: [
-          'California',
-          'Nevada',
-        ],
-      },
-      {
-        name: 'AT',
-        label: 'Austria',
-      },
-      {
-        name: 'DE',
-        label: 'Germany',
-      },
-      {
-        name: 'NL',
-        label: 'Netherlands',
-      },
-    ],
     currencies: [
       {
         name: 'EUR',
@@ -195,7 +173,7 @@ export default {
   },
   router: {
     extendRoutes(routes) {
-      getRoutes(`${__dirname}/_theme`).forEach((route) => routes.unshift(route));
+      getRoutes(`${__dirname}`).forEach((route) => routes.unshift(route));
     },
   },
 };
