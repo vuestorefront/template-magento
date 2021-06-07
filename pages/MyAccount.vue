@@ -24,13 +24,9 @@
           <BillingDetails />
         </SfContentPage>
 
-        <SfContentPage title="Loyalty card">
-          <LoyaltyCard />
-        </SfContentPage>
-
-        <SfContentPage title="My newsletter">
+        <!--        <SfContentPage title="My newsletter">
           <MyNewsletter />
-        </SfContentPage>
+        </SfContentPage>-->
       </SfContentCategory>
 
       <SfContentCategory title="Order details">
@@ -47,19 +43,18 @@
     </SfContentPages>
   </div>
 </template>
-<script>
+<script lang="ts">
 import { SfBreadcrumbs, SfContentPages } from '@storefront-ui/vue';
-import { computed } from '@vue/composition-api';
+import { computed, defineComponent } from '@vue/composition-api';
 import { useUser } from '@vue-storefront/magento';
-import MyProfile from './MyAccount/MyProfile';
-import ShippingDetails from './MyAccount/ShippingDetails';
-import BillingDetails from './MyAccount/BillingDetails';
-import LoyaltyCard from './MyAccount/LoyaltyCard';
-import MyNewsletter from './MyAccount/MyNewsletter';
-import OrderHistory from './MyAccount/OrderHistory';
-import MyReviews from './MyAccount/MyReviews';
+import MyProfile from './MyAccount/MyProfile.vue';
+import ShippingDetails from './MyAccount/ShippingDetails.vue';
+import BillingDetails from './MyAccount/BillingDetails.vue';
+// import MyNewsletter from './MyAccount/MyNewsletter';
+import OrderHistory from './MyAccount/OrderHistory.vue';
+import MyReviews from './MyAccount/MyReviews.vue';
 
-export default {
+export default defineComponent({
   name: 'MyAccount',
   components: {
     SfBreadcrumbs,
@@ -67,13 +62,12 @@ export default {
     MyProfile,
     ShippingDetails,
     BillingDetails,
-    LoyaltyCard,
-    MyNewsletter,
+    // MyNewsletter,
     OrderHistory,
-    MyReviews
+    MyReviews,
   },
   middleware: [
-    'is-authenticated'
+    'is-authenticated',
   ],
   setup(props, context) {
     const { $router, $route } = context.root;
@@ -106,16 +100,16 @@ export default {
       breadcrumbs: [
         {
           text: 'Home',
-          route: { link: '#' }
+          route: { link: '#' },
         },
         {
           text: 'My Account',
-          route: { link: '#' }
-        }
-      ]
+          route: { link: '#' },
+        },
+      ],
     };
-  }
-};
+  },
+});
 </script>
 
 <style lang='scss' scoped>

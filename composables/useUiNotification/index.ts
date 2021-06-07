@@ -15,7 +15,7 @@ interface Notifications {
 }
 
 const state = reactive<Notifications>({
-  notifications: []
+  notifications: [],
 });
 const maxVisibleNotifications = 3;
 const timeToLive = 3000;
@@ -25,7 +25,7 @@ const useUiNotification = () => {
     const id = Symbol();
 
     const dismiss = () => {
-      const index = state.notifications.findIndex(notification => notification.id === id);
+      const index = state.notifications.findIndex((notification) => notification.id === id);
 
       if (index !== -1) state.notifications.splice(index, 1);
     };
@@ -33,7 +33,7 @@ const useUiNotification = () => {
     const newNotification = {
       ...notification,
       id,
-      dismiss
+      dismiss,
     };
 
     state.notifications.push(newNotification);
@@ -46,7 +46,7 @@ const useUiNotification = () => {
 
   return {
     send,
-    notifications: computed(() => state.notifications)
+    notifications: computed(() => state.notifications),
   };
 };
 

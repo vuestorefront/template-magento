@@ -9,7 +9,7 @@ const state = reactive({
   isWishlistSidebarOpen: false,
   isLoginModalOpen: false,
   isCategoryGridView: true,
-  isFilterSidebarOpen: false
+  isFilterSidebarOpen: false,
 });
 
 const useUiState = () => {
@@ -52,7 +52,7 @@ const useUiState = () => {
     toggleLoginModal,
     changeToCategoryGridView,
     changeToCategoryListView,
-    toggleFilterSidebar
+    toggleFilterSidebar,
   };
 };
 

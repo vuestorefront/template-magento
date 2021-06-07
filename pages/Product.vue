@@ -205,7 +205,7 @@
     </LazyHydrate>
   </div>
 </template>
-<script>
+<script lang="ts">
 import {
   SfAddToCart,
   SfAlert,
@@ -226,7 +226,7 @@ import {
   SfSticky,
   SfTabs,
 } from '@storefront-ui/vue';
-import { ref, computed } from '@vue/composition-api';
+import { ref, computed, defineComponent } from '@vue/composition-api';
 import { onSSR } from '@vue-storefront/core';
 import LazyHydrate from 'vue-lazy-hydration';
 import {
@@ -241,7 +241,7 @@ import MobileStoreBanner from '~/components/MobileStoreBanner.vue';
 import ProductsCarousel from '~/components/ProductsCarousel.vue';
 import { useVueRouter } from '../helpers/hooks/useVueRouter';
 
-export default {
+export default defineComponent({
   name: 'Product',
   components: {
     InstagramFeed,
@@ -375,7 +375,7 @@ export default {
       upsellProducts,
     };
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
