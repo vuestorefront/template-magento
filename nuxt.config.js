@@ -1,5 +1,6 @@
 import webpack from 'webpack';
 import middleware from './middleware.config';
+import { getRoutes } from './routes';
 
 const {
   integrations: {
@@ -71,7 +72,6 @@ export default {
     // to core
     '@nuxt/typescript-build',
     '@nuxtjs/style-resources',
-    // to core soon
     '@nuxtjs/pwa',
     ['@vue-storefront/nuxt', {
       useRawSource: {
@@ -95,6 +95,7 @@ export default {
       tax,
       defaultStore,
       websites,
+
     }],
   ],
   modules: [
@@ -191,5 +192,10 @@ export default {
         }),
       }),
     ],
+  },
+  router: {
+    extendRoutes(routes) {
+      getRoutes(`${__dirname}/_theme`).forEach((route) => routes.unshift(route));
+    },
   },
 };

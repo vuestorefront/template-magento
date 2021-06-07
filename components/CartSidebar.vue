@@ -3,7 +3,7 @@
     <SfSidebar
       v-e2e="'sidebar-cart'"
       :visible="isCartSidebarOpen"
-      title="My Cart"
+      :title="$t('My Cart')"
       class="sf-sidebar--right"
       @close="toggleCartSidebar"
     >
@@ -11,27 +11,49 @@
         <SfProperty
           v-if="totalItems"
           class="sf-property--large cart-summary desktop-only"
-          name="Total items"
+          :name="$t('Total items')"
           :value="totalItems"
         />
       </template>
-      <transition name="sf-fade" mode="out-in">
-        <div v-if="totalItems" key="my-cart" class="my-cart">
+      <transition
+        name="sf-fade"
+        mode="out-in"
+      >
+        <div
+          v-if="totalItems"
+          key="my-cart"
+          class="my-cart"
+        >
           <div class="collected-product-list">
-            <transition-group name="sf-fade" tag="div">
+            <transition-group
+              name="sf-fade"
+              tag="div"
+            >
               <SfCollectedProduct
                 v-for="product in products"
-                :key="cartGetters.getItemSku(product)"
+                :key="`${cartGetters.getItemSku(product)}-${Math.random()}`"
                 :image="cartGetters.getItemImage(product)"
                 :title="cartGetters.getItemName(product)"
                 :regular-price="$n(cartGetters.getItemPrice(product).regular, 'currency')"
-                :special-price="cartGetters.getItemPrice(product).special && $n(cartGetters.getItemPrice(product).special, 'currency')"
+                :special-price="cartGetters.productHasSpecialPrice(product)
+                  ? getItemPrice(product).special && $n(cartGetters.getItemPrice(product).special, 'currency')
+                  : ''"
                 :stock="99999"
                 :qty="cartGetters.getItemQty(product)"
+                class="collected-product"
                 @input="updateItemQty({ product, quantity: $event })"
                 @click:remove="removeItem({ product })"
-                class="collected-product"
               >
+                <template #input>
+                  <div class="sf-collected-product__quantity-wrapper">
+                    <SfQuantitySelector
+                      :disabled="loading"
+                      :qty="cartGetters.getItemQty(product)"
+                      class="sf-collected-product__quantity-selector"
+                      @input="updateItemQty({ product, quantity: $event })"
+                    />
+                  </div>
+                </template>
                 <template #configuration>
                   <div class="collected-product__properties">
                     <SfProperty
@@ -46,7 +68,11 @@
             </transition-group>
           </div>
         </div>
-        <div v-else key="empty-cart" class="empty-cart">
+        <div
+          v-else
+          key="empty-cart"
+          class="empty-cart"
+        >
           <div class="empty-cart__banner">
             <SfImage
               alt="Empty bag"
@@ -57,8 +83,7 @@
               title="Your cart is empty"
               :level="2"
               class="empty-cart__heading"
-              description="Looks like you haven’t added any items to the bag yet. Start
-              shopping to fill it in."
+              :description="$t('Looks like you haven’t added any items to the bag yet. Start shopping to fill it in.')"
             />
           </div>
         </div>
@@ -67,14 +92,17 @@
         <transition name="sf-fade">
           <div v-if="totalItems">
             <SfProperty
-              name="Total price"
+              :name="$t('Subtotal price')"
               class="sf-property--full-width sf-property--large my-cart__total-price"
             >
               <template #value>
-                <SfPrice :regular="$n(totals.subtotal, 'currency')" />
+                <SfPrice
+                  :regular="$n(totals.subtotal, 'currency')"
+                  :special="totals.subtotal > totals.special ? '' : $n(totals.special, 'currency')"
+                />
               </template>
             </SfProperty>
-            <nuxt-link to="/checkout/shipping">
+            <a @click="goToCheckout">
               <SfButton
                 v-e2e="'go-to-checkout-btn'"
                 class="sf-button--full-width color-secondary"
@@ -82,14 +110,15 @@
               >
                 {{ $t('Go to checkout') }}
               </SfButton>
-            </nuxt-link>
+            </a>
           </div>
           <div v-else>
             <SfButton
               class="sf-button--full-width color-primary"
               @click="toggleCartSidebar"
-            >{{ $t('Go back shopping') }}</SfButton
             >
+              {{ $t('Go back shopping') }}
+            </SfButton>
           </div>
         </transition>
       </template>
@@ -105,15 +134,19 @@ import {
   SfProperty,
   SfPrice,
   SfCollectedProduct,
-  SfImage
+  SfImage,
+  SfQuantitySelector,
 } from '@storefront-ui/vue';
 import { computed } from '@vue/composition-api';
-import { useCart, useUser, cartGetters } from '@vue-storefront/magento';
-import { useUiState } from '~/composables';
+import {
+  useCart, useUser, cartGetters, useExternalCheckout,
+} from '@vue-storefront/magento';
 import { onSSR } from '@vue-storefront/core';
+import { useUiState } from '~/composables';
+import { useVueRouter } from '../helpers/hooks/useVueRouter';
 
 export default {
-  name: 'Cart',
+  name: 'CartSidebar',
   components: {
     SfSidebar,
     SfButton,
@@ -122,11 +155,20 @@ export default {
     SfProperty,
     SfPrice,
     SfCollectedProduct,
-    SfImage
+    SfImage,
+    SfQuantitySelector,
   },
   setup() {
+    const { initializeCheckout } = useExternalCheckout();
     const { isCartSidebarOpen, toggleCartSidebar } = useUiState();
-    const { cart, removeItem, updateItemQty, load: loadCart } = useCart();
+    const { router } = useVueRouter();
+    const {
+      cart,
+      removeItem,
+      updateItemQty,
+      load: loadCart,
+      loading,
+    } = useCart();
     const { isAuthenticated } = useUser();
     const products = computed(() => cartGetters.getItems(cart.value));
     const totals = computed(() => cartGetters.getTotals(cart.value));
@@ -136,18 +178,25 @@ export default {
       await loadCart();
     });
 
+    const goToCheckout = async () => {
+      const redirectUrl = await initializeCheckout('/checkout/user-account');
+      await router.push(redirectUrl);
+    };
+
     return {
+      loading,
       isAuthenticated,
       products,
       removeItem,
       updateItemQty,
       isCartSidebarOpen,
       toggleCartSidebar,
+      goToCheckout,
       totals,
       totalItems,
-      cartGetters
+      cartGetters,
     };
-  }
+  },
 };
 </script>
 
