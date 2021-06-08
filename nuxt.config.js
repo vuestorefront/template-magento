@@ -85,7 +85,9 @@ export default {
         ],
       },
     }],
-    ['@vue-storefront/nuxt-theme'],
+    ['@vue-storefront/nuxt-theme', {
+      routes: false,
+    }],
     ['@vue-storefront/magento/nuxt', {
       i18n: {
         useNuxtI18nConfig: true,
@@ -95,7 +97,6 @@ export default {
       tax,
       defaultStore,
       websites,
-
     }],
   ],
   modules: [
