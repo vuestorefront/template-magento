@@ -3,11 +3,15 @@
 > Magento 2.x theme
 ## Configuration Setup
 1. Run `yarn` to install dependencies
-2. Copy `config/example.json` to an environment named config and update GraphQL Endpoint
+2. Define a store running environment by adding a `STORE_ENV` to your running project or execute the code 
+    ```bash
+    $ echo "STORE_ENV=dev" >> .env
     ```
-    cp config/example.json config/dev.json
+3. Copy `config/example.json` to an environment named config and update GraphQL Endpoint
+    ```bash
+    $ cp config/example.json config/dev.json
     ```
-3. Update `magentoGraphQl` with url to Magento >=2.4.2 GraphQL endpoint, and the other variable accordingly to your store configurations.
+4. Update `magentoGraphQl` with url to Magento >=2.4.2 GraphQL endpoint, and the other variable accordingly to your store configurations.
     ```
     "magentoGraphQl": "https://{YOUR_SITE_FRONT_URL}/graphql",
     ```
