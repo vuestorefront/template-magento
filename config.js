@@ -8,7 +8,7 @@ const config = convict({
   env: {
     doc: 'Current Store Running Environment',
     format: String,
-    default: process.env.STORE_ENV || '',
+    default: process.env.STORE_ENV || 'dev',
     env: 'STORE_ENV',
   },
   // region Magento 2 VueStorefront
