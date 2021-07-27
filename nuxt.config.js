@@ -11,6 +11,7 @@ const {
         tax,
         defaultStore,
         websites,
+        facets,
       },
     },
   },
@@ -97,6 +98,7 @@ export default {
       tax,
       defaultStore,
       websites,
+      facets,
     }],
   ],
   modules: [
@@ -155,10 +157,6 @@ export default {
         ['@babel/plugin-proposal-private-methods', { loose: true }],
       ],
     },
-    extend(config, ctx) {
-      // eslint-disable-next-line no-param-reassign
-      config.devtool = ctx.isClient ? 'eval-source-map' : 'inline-source-map';
-    },
     transpile: [
       'vee-validate/dist/rules',
     ],
@@ -171,6 +169,36 @@ export default {
         }),
       }),
     ],
+    extend(config, ctx) {
+      // eslint-disable-next-line no-param-reassign
+      config.devtool = ctx.isClient ? 'eval-source-map' : 'inline-source-map';
+
+      if (ctx && ctx.isClient) {
+        // eslint-disable-next-line no-param-reassign
+        config.optimization = {
+          ...config.optimization,
+          mergeDuplicateChunks: true,
+          splitChunks: {
+            ...config.optimization.splitChunks,
+            chunks: 'all',
+            automaticNameDelimiter: '.',
+            maxSize: 128_000,
+            maxInitialRequests: Number.POSITIVE_INFINITY,
+            minSize: 0,
+            maxAsyncRequests: 10,
+            cacheGroups: {
+              vendor: {
+                test: /[/\\]node_modules[/\\]/,
+                name: (module) => `${module
+                  .context
+                  .match(/[/\\]node_modules[/\\](.*?)([/\\]|$)/)[1]
+                  .replace(/[.@_]/gm, '')}`,
+              },
+            },
+          },
+        };
+      }
+    },
   },
   router: {
     extendRoutes(routes) {
