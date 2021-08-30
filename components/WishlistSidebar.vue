@@ -4,69 +4,138 @@
       :visible="isWishlistSidebarOpen"
       :button="false"
       title="My Wishlist"
-      @close="toggleWishlistSidebar"
       class="sidebar sf-sidebar--right"
+      @close="toggleWishlistSidebar"
     >
       <template #title>
         <div class="heading__wrapper">
-          <SfHeading :level="3" title="My wishlist" class="sf-heading--left"/>
-          <SfButton class="heading__close-button sf-button--pure" aria-label="Wishlist sidebar close button" @click="toggleWishlistSidebar">
-            <SfIcon icon="cross" size="14px" color="gray-primary"/>
+          <SfHeading
+            :level="3"
+            title="My wishlist"
+            class="sf-heading--left"
+          />
+          <SfButton
+            class="heading__close-button sf-button--pure"
+            aria-label="Wishlist sidebar close button"
+            @click="toggleWishlistSidebar"
+          >
+            <SfIcon
+              icon="cross"
+              size="14px"
+              color="gray-primary"
+            />
           </SfButton>
         </div>
       </template>
-      <transition name="fade" mode="out-in">
-        <div v-if="totalItems" class="my-wishlist" key="my-wishlist">
-          <div class="my-wishlist__total-items">Total items: <strong>{{ totalItems }}</strong></div>
+      <transition
+        name="fade"
+        mode="out-in"
+      >
+        <div
+          v-if="totalItems"
+          key="my-wishlist"
+          class="my-wishlist"
+        >
+          <div class="my-wishlist__total-items">
+            Total items: <strong>{{ totalItems }}</strong>
+          </div>
           <div class="collected-product-list">
-            <transition-group name="fade" tag="div">
-              <SfCollectedProduct
-                v-for="product in products"
-                :key="wishlistGetters.getItemSku(product)"
-                :image="wishlistGetters.getItemImage(product)"
-                :title="wishlistGetters.getItemName(product)"
-                :regular-price="$n(wishlistGetters.getItemPrice(product).regular, 'currency')"
-                :special-price="wishlistGetters.getItemPrice(product).special && $n(wishlistGetters.getItemPrice(product).special, 'currency')"
-                :stock="99999"
-                image-width="180"
-                image-height="200"
-                @click:remove="removeItem({ product })"
-                class="collected-product"
-              >
-               <template #configuration>
-                  <div class="collected-product__properties">
-                    <SfProperty v-for="(attribute, key) in wishlistGetters.getItemAttributes(product, ['color', 'size'])" :key="key" :name="key" :value="attribute"/>
-                  </div>
-                </template>
-                <template #input="{}">&nbsp;</template>
-              </SfCollectedProduct>
-            </transition-group>
+            <SfCollectedProduct
+              v-for="(product, i) in products"
+              :key="i"
+              :image="wishlistGetters.getItemImage(product)"
+              :title="wishlistGetters.getItemName(product)"
+              :regular-price="$n(wishlistGetters.getItemPrice(product).regular, 'currency')"
+              :link="localePath(`/p/${wishlistGetters.getItemSku(product)}${productGetters.getSlug(product.product, product.product.categories[0])}`)"
+              :special-price="wishlistGetters.getItemPrice(product).special && $n(wishlistGetters.getItemPrice(product).special, 'currency')"
+              :stock="99999"
+              class="collected-product"
+              @click:remove="removeItem({ product: product.product })"
+            >
+              <template #input>
+                <div />
+              </template>
+              <template #image>
+                <SfLink
+                  :link="
+                    localePath(`/p/${wishlistGetters.getItemSku(product)}${productGetters.getSlug(product.product, product.product.categories[0])}`)
+                  "
+                >
+                  <SfImage
+                    :src="wishlistGetters.getItemImage(product)"
+                    :alt="wishlistGetters.getItemName(product)"
+                    :width="140"
+                    :height="200"
+                    class="sf-collected-product__image"
+                  />
+                </SfLink>
+              </template>
+              <template #configuration>
+                <div
+                  v-if="getAttributes(product).length > 0"
+                >
+                  <SfProperty
+                    v-for="(attr, index) in getAttributes(product)"
+                    :key="index"
+                    :name="attr.option_label"
+                    :value="attr.value_label"
+                  />
+                </div>
+                <div
+                  v-if="getBundles(product).length > 0"
+                >
+                  <SfProperty
+                    v-for="(bundle, i) in getBundles(product)"
+                    :key="i"
+                    :value="bundle"
+                  >
+                    <template #name>
+                      <div />
+                    </template>
+                  </SfProperty>
+                </div>
+                <div v-else />
+              </template>
+              <template #actions>
+                <div />
+              </template>
+            </SfCollectedProduct>
           </div>
           <div class="sidebar-bottom">
-          <SfProperty class="sf-property--full-width my-wishlist__total-price">
-            <template #name>
-              <span class="my-wishlist__total-price-label">Total price:</span>
-            </template>
-            <template #value>
-              <SfPrice :regular="$n(totals.subtotal, 'currency')" />
-            </template>
-          </SfProperty>
+            <SfProperty class="sf-property--full-width my-wishlist__total-price">
+              <template #name>
+                <span class="my-wishlist__total-price-label">Total price:</span>
+              </template>
+              <template #value>
+                <SfPrice :regular="$n(totals.subtotal, 'currency')" />
+              </template>
+            </SfProperty>
           </div>
         </div>
-        <div v-else class="empty-wishlist" key="empty-wishlist">
+        <div
+          v-else
+          key="empty-wishlist"
+          class="empty-wishlist"
+        >
           <div class="empty-wishlist__banner">
-            <SfImage src="/icons/empty-cart.svg" alt="Empty bag" class="empty-wishlist__icon" />
+            <SfImage
+              src="/icons/empty-cart.svg"
+              alt="Empty bag"
+              class="empty-wishlist__icon"
+            />
             <SfHeading
               title="Your bag is empty"
-              description="Looks like you haven’t added any items to the bag yet. Start
-              shopping to fill it in."
+              description="Looks like you haven’t added any items to the Wishlist."
               class="empty-wishlist__label"
             />
           </div>
         </div>
       </transition>
       <template #content-bottom>
-        <SfButton @click="toggleWishlistSidebar" class="sf-button--full-width color-secondary">
+        <SfButton
+          class="sf-button--full-width color-secondary"
+          @click="toggleWishlistSidebar"
+        >
           {{ $t('Start shopping') }}
         </SfButton>
       </template>
@@ -82,15 +151,21 @@ import {
   SfProperty,
   SfPrice,
   SfCollectedProduct,
-  SfImage
+  SfImage,
+  SfLink,
 } from '@storefront-ui/vue';
 import { computed } from '@vue/composition-api';
-import { useWishlist, useUser, wishlistGetters } from '@vue-storefront/magento';
+import {
+  useWishlist,
+  useUser,
+  wishlistGetters,
+  productGetters,
+} from '@vue-storefront/magento';
 import { onSSR } from '@vue-storefront/core';
 import { useUiState } from '~/composables';
 
 export default {
-  name: 'Wishlist',
+  name: 'WishlistSidebar',
   components: {
     SfSidebar,
     SfButton,
@@ -99,31 +174,39 @@ export default {
     SfProperty,
     SfPrice,
     SfCollectedProduct,
-    SfImage
+    SfImage,
+    SfLink,
   },
   setup() {
     const { isWishlistSidebarOpen, toggleWishlistSidebar } = useUiState();
     const { wishlist, removeItem, load: loadWishlist } = useWishlist();
     const { isAuthenticated } = useUser();
-    const products = computed(() => wishlistGetters.getItems(wishlist.value));
+    const products = computed(() => wishlistGetters.getProducts(wishlist.value));
     const totals = computed(() => wishlistGetters.getTotals(wishlist.value));
     const totalItems = computed(() => wishlistGetters.getTotalItems(wishlist.value));
+
+    const getAttributes = (product) => product?.product?.configurable_options || [];
+    const getBundles = (product) => product?.product?.items?.map((b) => b.title).flat() || [];
 
     onSSR(async () => {
       await loadWishlist();
     });
 
     return {
+      getAttributes,
+      getBundles,
       isAuthenticated,
+      isWishlistSidebarOpen,
       products,
       removeItem,
-      isWishlistSidebarOpen,
       toggleWishlistSidebar,
-      totals,
       totalItems,
-      wishlistGetters
+      totals,
+      wishlistGetters,
+      wishlist,
+      productGetters,
     };
-  }
+  },
 };
 </script>
 

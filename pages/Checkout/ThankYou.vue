@@ -76,11 +76,11 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { SfHeading, SfButton, SfCallToAction } from '@storefront-ui/vue';
-import { ref, defineComponent } from '@vue/composition-api';
+import { ref } from '@vue/composition-api';
 
-export default defineComponent({
+export default {
   components: {
     SfHeading,
     SfButton,
@@ -102,7 +102,7 @@ export default defineComponent({
       orderNumber
     };
   }
-});
+};
 </script>
 <style lang="scss" scoped>
 #thank-you {
