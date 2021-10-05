@@ -1,4 +1,5 @@
 import webpack from 'webpack';
+import config from './config.js';
 import middleware from './middleware.config';
 import { getRoutes } from './routes';
 
@@ -19,9 +20,9 @@ const {
 
 export default {
   ssr: true,
-  dev: process.env.NODE_ENV !== 'production',
+  dev: config.get('nuxtAppEnvironment') !== 'production',
   server: {
-    port: 3000,
+    port: config.get('nuxtAppPort'),
     host: '0.0.0.0',
   },
   head: {
@@ -44,22 +45,6 @@ export default {
         type: 'image/x-icon',
         href: '/favicon.ico',
       },
-      {
-        rel: 'preconnect',
-        href: 'https://fonts.gstatic.com',
-        crossorigin: 'crossorigin',
-      },
-      {
-        rel: 'preload',
-        href: 'https://fonts.googleapis.com/css?family=Raleway:300,400,400i,500,600,700|Roboto:300,300i,400,400i,500,700&display=swap',
-        as: 'style',
-      },
-      {
-        rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css?family=Raleway:300,400,400i,500,600,700|Roboto:300,300i,400,400i,500,700&display=swap',
-        media: 'print',
-        onload: 'this.media=\'all\'',
-      },
     ],
   },
   loading: { color: '#fff' },
@@ -72,8 +57,9 @@ export default {
   buildModules: [
     // to core
     '@nuxt/typescript-build',
-    '@nuxtjs/style-resources',
+    '@nuxtjs/google-fonts',
     '@nuxtjs/pwa',
+    '@nuxtjs/style-resources',
     ['@vue-storefront/nuxt', {
       useRawSource: {
         dev: ['@vue-storefront/magento', '@vue-storefront/core'],
@@ -97,7 +83,9 @@ export default {
     }],
   ],
   modules: [
-    'nuxt-i18n',
+    ['nuxt-i18n', {
+      baseUrl: process.env.BASE_URL || 'http://localhost:3000',
+    }],
     'cookie-universal-nuxt',
     'vue-scrollto/nuxt',
     '@vue-storefront/middleware/nuxt',
@@ -143,6 +131,24 @@ export default {
       cookieKey: 'vsf-locale',
     },
   },
+  pwa: {
+    meta: {
+      theme_color: '#5ECE7B',
+    },
+  },
+  googleFonts: {
+    families: {
+      Raleway: {
+        wght: [300, 400, 500, 600, 700],
+        ital: [400],
+      },
+      Roboto: {
+        wght: [300, 400, 500, 700],
+        ital: [300, 400],
+      },
+    },
+    display: 'swap',
+  },
   styleResources: {
     scss: [require.resolve('@storefront-ui/shared/styles/_helpers.scss', { paths: [process.cwd()] })],
   },
@@ -164,26 +170,30 @@ export default {
         }),
       }),
     ],
-    extend(config, ctx) {
+    extend(cfg, ctx) {
       // eslint-disable-next-line no-param-reassign
-      config.devtool = ctx.isClient ? 'eval-source-map' : 'inline-source-map';
+      cfg.devtool = ctx.isClient ? 'eval-source-map' : 'inline-source-map';
 
       if (ctx && ctx.isClient) {
         // eslint-disable-next-line no-param-reassign
-        config.optimization = {
-          ...config.optimization,
+        cfg.optimization = {
+          ...cfg.optimization,
           mergeDuplicateChunks: true,
           splitChunks: {
-            ...config.optimization.splitChunks,
-            chunks: 'all',
+            ...cfg.optimization.splitChunks,
             automaticNameDelimiter: '.',
+            chunks: 'all',
+            enforceSizeThreshold: 40_000,
+            maxAsyncRequests: 30,
+            maxInitialRequests: 30,
             maxSize: 128_000,
-            maxInitialRequests: Number.POSITIVE_INFINITY,
+            minChunks: 1,
             minSize: 0,
-            maxAsyncRequests: 10,
             cacheGroups: {
+              ...cfg.optimization.splitChunks.cacheGroups,
               vendor: {
                 test: /[/\\]node_modules[/\\]/,
+                reuseExistingChunk: true,
                 name: (module) => `${module
                   .context
                   .match(/[/\\]node_modules[/\\](.*?)([/\\]|$)/)[1]
