@@ -7,7 +7,7 @@
     <AppHeader />
 
     <div id="layout">
-      <nuxt :key="route.fullPath"/>
+      <nuxt :key="route.fullPath" />
 
       <BottomNavigation />
       <CartSidebar />
@@ -22,6 +22,13 @@
 </template>
 
 <script>
+import LazyHydrate from 'vue-lazy-hydration';
+import { onSSR } from '@vue-storefront/core';
+import { useRoute, defineComponent } from '@nuxtjs/composition-api';
+import {
+  useCart,
+  useUser,
+} from '@vue-storefront/magento';
 import AppHeader from '~/components/AppHeader.vue';
 import BottomNavigation from '~/components/BottomNavigation.vue';
 import AppFooter from '~/components/AppFooter.vue';
@@ -29,13 +36,10 @@ import TopBar from '~/components/TopBar.vue';
 import CartSidebar from '~/components/CartSidebar.vue';
 import WishlistSidebar from '~/components/WishlistSidebar.vue';
 import LoginModal from '~/components/LoginModal.vue';
-import LazyHydrate from 'vue-lazy-hydration';
 import Notification from '~/components/Notification';
-import { onSSR } from '@vue-storefront/core';
-import { useRoute } from '@nuxtjs/composition-api';
-import { useCart, useStore, useUser, useWishlist } from '@vue-storefront/magento';
+import { useMagentoConfiguration } from '~/composables/useMagentoConfiguration';
 
-export default {
+export default defineComponent({
   name: 'DefaultLayout',
 
   components: {
@@ -47,30 +51,29 @@ export default {
     CartSidebar,
     WishlistSidebar,
     LoginModal,
-    Notification
+    Notification,
   },
 
   setup() {
     const route = useRoute();
-    const { load: loadStores } = useStore();
     const { load: loadUser } = useUser();
     const { load: loadCart } = useCart();
-    const { load: loadWishlist } = useWishlist();
+
+    const { loadConfiguration } = useMagentoConfiguration();
 
     onSSR(async () => {
+      await loadConfiguration();
       await Promise.all([
-        loadStores(),
         loadUser(),
         loadCart(),
-        loadWishlist()
       ]);
     });
 
     return {
-      route
+      route,
     };
-  }
-};
+  },
+});
 </script>
 
 <style lang="scss">
@@ -96,6 +99,7 @@ html {
     overflow-x: hidden;
   }
 }
+
 body {
   overflow-x: hidden;
   color: var(--c-text);
@@ -104,31 +108,37 @@ body {
   margin: 0;
   padding: 0;
 }
+
 a {
   text-decoration: none;
   color: var(--c-link);
+
   &:hover {
     color: var(--c-link-hover);
   }
 }
+
 h1 {
   font-family: var(--font-family--secondary);
   font-size: var(--h1-font-size);
   line-height: 1.6;
   margin: 0;
 }
+
 h2 {
   font-family: var(--font-family--secondary);
   font-size: var(--h2-font-size);
   line-height: 1.6;
   margin: 0;
 }
+
 h3 {
   font-family: var(--font-family--secondary);
   font-size: var(--h3-font-size);
   line-height: 1.6;
   margin: 0;
 }
+
 h4 {
   font-family: var(--font-family--secondary);
   font-size: var(--h4-font-size);
