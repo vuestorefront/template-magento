@@ -1,3 +1,6 @@
+// @core-development-only-start
+/* eslint-disable unicorn/prefer-module */
+// @core-development-only-end
 import webpack from 'webpack';
 import config from './config.js';
 import middleware from './middleware.config';
@@ -9,9 +12,7 @@ const {
       configuration: {
         cookies,
         externalCheckout,
-        tax,
         defaultStore,
-        websites,
         facets,
       },
     },
@@ -71,9 +72,7 @@ export default {
       },
       cookies,
       externalCheckout,
-      tax,
       defaultStore,
-      websites,
       facets,
     }],
   ],
@@ -107,6 +106,20 @@ export default {
           currency: {
             style: 'currency',
             currency: 'USD',
+            currencyDisplay: 'symbol',
+          },
+        },
+        'de-DE': {
+          currency: {
+            style: 'currency',
+            currency: 'EUR',
+            currencyDisplay: 'symbol',
+          },
+        },
+        'nl-NL': {
+          currency: {
+            style: 'currency',
+            currency: 'EUR',
             currencyDisplay: 'symbol',
           },
         },
