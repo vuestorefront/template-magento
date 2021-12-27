@@ -125,9 +125,7 @@ export default {
         },
       },
     },
-    detectBrowserLanguage: {
-      cookieKey: 'vsf-locale',
-    },
+    detectBrowserLanguage: false,
   },
   pwa: {
     meta: {
