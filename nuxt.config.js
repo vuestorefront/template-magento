@@ -209,8 +209,7 @@ export default {
   ],
   router: {
     extendRoutes(routes) {
-      getRoutes(`${__dirname}/_theme`)
-        .forEach((route) => routes.unshift(route));
+      getRoutes(`${__dirname}`).forEach((route) => routes.unshift(route));
     },
   },
 };
