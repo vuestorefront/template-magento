@@ -5,8 +5,8 @@
       class="banner"
       title="Thank you for your order!"
       :image="{
-        mobile: '/thankyou/bannerM.png',
-        desktop: '/thankyou/bannerD.png',
+        mobile: addBasePath('/thankyou/bannerM.png'),
+        desktop: addBasePath('/thankyou/bannerD.png'),
       }"
     >
       <template #description>
@@ -31,17 +31,25 @@
             :level="6"
             class="heading sf-heading--left sf-heading--no-underline"
             title="Primary contacts for any questions"
-          ></SfHeading>
+          />
           <div class="contact">
-            <p class="contact__name">{{ companyDetails.name }}</p>
-            <p class="contact__street">{{ companyDetails.street }}</p>
-            <p class="contact__city">{{ companyDetails.city }}</p>
-            <p class="contact__email">{{ companyDetails.email }}</p>
+            <p class="contact__name">
+              {{ companyDetails.name }}
+            </p>
+            <p class="contact__street">
+              {{ companyDetails.street }}
+            </p>
+            <p class="contact__city">
+              {{ companyDetails.city }}
+            </p>
+            <p class="contact__email">
+              {{ companyDetails.email }}
+            </p>
           </div>
         </div>
-        <SfButton class="order__notifications-button button-size"
-          >{{ $t('Allow order notifications') }}</SfButton
-        >
+        <SfButton class="order__notifications-button button-size">
+          {{ $t('Allow order notifications') }}
+        </SfButton>
       </div>
       <div class="additional-info">
         <div>
@@ -65,26 +73,28 @@
           </p>
           <SfButton
             class="feedback-button color-secondary sf-button--full-width button-size"
-            >{{ $t('Send my feedback') }}</SfButton
           >
+            {{ $t('Send my feedback') }}
+          </SfButton>
         </div>
       </div>
     </section>
-    <SfButton class="back-button color-secondary button-size"
-      >{{ $t('Go back to shop') }}</SfButton
-    >
+    <SfButton class="back-button color-secondary button-size">
+      {{ $t('Go back to shop') }}
+    </SfButton>
   </div>
 </template>
 
 <script>
 import { SfHeading, SfButton, SfCallToAction } from '@storefront-ui/vue';
 import { ref } from '@nuxtjs/composition-api';
+import { addBasePath } from '@vue-storefront/core';
 
 export default {
   components: {
     SfHeading,
     SfButton,
-    SfCallToAction
+    SfCallToAction,
   },
   setup(props, context) {
     context.emit('changeStep', 4);
@@ -93,15 +103,16 @@ export default {
       name: 'Divante Headquarter',
       street: 'St. Dmowskiego 17, 53-534',
       city: 'Wroclaw, Poland',
-      email: 'demo@vuestorefront.io'
+      email: 'demo@vuestorefront.io',
     });
     const orderNumber = ref('80932031-030-00');
 
     return {
+      addBasePath,
       companyDetails,
-      orderNumber
+      orderNumber,
     };
-  }
+  },
 };
 </script>
 <style lang="scss" scoped>
