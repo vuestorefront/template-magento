@@ -1,11 +1,15 @@
 <template>
-  <SfFooter :column="4" multiple class="footer">
+  <SfFooter
+    :column="4"
+    multiple
+    class="footer"
+  >
     <SfFooterColumn :title="$t('About us')">
       <SfList>
         <SfListItem
           v-for="item in aboutUs"
           :key="item"
-          >
+        >
           <SfMenuItem
             :label="$t(item)"
           />
@@ -50,21 +54,37 @@
     </SfFooterColumn>
     <SfFooterColumn title="Social">
       <div class="footer__socials">
-        <SfImage class="footer__social-image" v-for="item in social" :key="item" :src="'/icons/'+item+'.svg'" :alt="item" width="32" height="32" />
+        <SfImage
+          v-for="item in social"
+          :key="item"
+          class="footer__social-image"
+          :src="addBasePath('/icons/'+item+'.svg')"
+          :alt="item"
+          width="32"
+          height="32"
+        />
       </div>
     </SfFooterColumn>
   </SfFooter>
 </template>
 
 <script>
-import { SfFooter, SfList, SfImage, SfMenuItem } from '@storefront-ui/vue';
+import {
+  SfFooter, SfList, SfImage, SfMenuItem,
+} from '@storefront-ui/vue';
+import { addBasePath } from '@vue-storefront/core';
 
 export default {
   components: {
     SfFooter,
     SfList,
     SfImage,
-    SfMenuItem
+    SfMenuItem,
+  },
+  setup() {
+    return {
+      addBasePath,
+    };
   },
   data() {
     return {
@@ -74,9 +94,9 @@ export default {
       paymentsDelivery: ['Purchase terms', 'Guarantee'],
       social: ['facebook', 'pinterest', 'google', 'twitter', 'youtube'],
       isMobile: false,
-      desktopMin: 1024
+      desktopMin: 1024,
     };
-  }
+  },
 };
 </script>
 
@@ -100,6 +120,8 @@ export default {
   }
   &__social-image {
     margin: 0 var(--spacer-2xs) 0 0;
+    background-color: #fff;
+    border-radius: 100%;
   }
 }
 .sf-footer {
