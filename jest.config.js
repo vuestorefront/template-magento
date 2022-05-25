@@ -1,6 +1,11 @@
 /* eslint-disable unicorn/prefer-module */
 module.exports = {
-  globals: { __DEV__: true },
+  globals: {
+    __DEV__: true,
+    'ts-jest': {
+      tsConfig: 'tsconfig.spec.json'
+    }
+  },
 
   coverageReporters: ['lcov'],
 
