@@ -8,10 +8,12 @@
     />
   </div>
 </template>
-<script>
+<script lang="ts">
 import { defineComponent, ref, useFetch } from '@nuxtjs/composition-api';
+import type { PropType } from '@nuxtjs/composition-api';
 import { useContent } from '~/composables';
-import ContentBlock from './ContentBlock';
+import type { CmsBlock } from '~/modules/GraphQL/types';
+import ContentBlock from './ContentBlock.vue';
 
 export default defineComponent({
   name: 'ContentBlocks',
@@ -20,7 +22,7 @@ export default defineComponent({
   },
   props: {
     identifiers: {
-      type: Array,
+      type: Array as PropType<string[]>,
       required: true,
     },
   },
@@ -28,11 +30,11 @@ export default defineComponent({
     const {
       loadBlocks,
     } = useContent();
-    const blocks = ref([]);
+    const blocks = ref<CmsBlock[]>([]);
 
     useFetch(async () => {
       if (props.identifiers) {
-        blocks.value = await loadBlocks(props.identifiers);
+        blocks.value = await loadBlocks({ identifiers: props.identifiers });
       }
     });
 

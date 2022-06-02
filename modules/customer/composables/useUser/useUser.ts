@@ -1,5 +1,8 @@
 import type { Ref, ComputedRef } from '@nuxtjs/composition-api';
 import type { ComposableFunctionArgs } from '~/composables/types';
+import type {
+  Customer, ChangeCustomerPasswordMutation, CustomerCreateInput, GenerateCustomerTokenMutationVariables,
+} from '~/modules/GraphQL/types';
 
 /**
  * Errors that occured in the `useUser` composable
@@ -13,37 +16,25 @@ export interface UseUserErrors {
   load: Error | null;
 }
 
-export interface User {
-  id: string
-  email: string
-  firstname: string
-  password: string
-  is_subscribed: boolean
-  middlename? : string
-  prefix?: string
-  suffix?: string
-  taxvat?: string
-}
-
 /**
  * Parameters accepted by the `updateUser` method in the `useUser` composable
  */
 export type UseUserUpdateUserParams = ComposableFunctionArgs<{
-  user: User;
+  user: ChangeCustomerPasswordMutation['changeCustomerPassword'] & { email?: string, password?: string }
 }>;
 
 /**
  * Parameters accepted by the `register` method in the `useUser` composable
  */
 export type UseUserRegisterParams = ComposableFunctionArgs<{
-  user: any; // TODO: Neither `Customer`, nor `CustomerCreateInput` match expected data
+  user: CustomerCreateInput;
 }>;
 
 /**
  * Parameters accepted by the `login` method in the `useUser` composable
  */
 export type UseUserLoginParams = ComposableFunctionArgs<{
-  user: any; // TODO: Neither `Customer`, nor `CustomerCreateInput` match expected data
+  user: GenerateCustomerTokenMutationVariables & { recaptchaToken?: string }
 }>;
 
 /**
@@ -65,13 +56,13 @@ export type UseUserChangePasswordParams = ComposableFunctionArgs<{
 export type UseUserLoadParams = ComposableFunctionArgs<{}>;
 
 /**
- * Represents the data returned from and functions available in the `useUser()` composable.
+ * Data and methods returned from the {@link useUser|useUser()} composable
  */
 export interface UseUserInterface {
   /**
    * Overrides the `user` property with the data passed as a parameter
    */
-  setUser(newUser: User): void;
+  setUser(newUser: Customer): void;
 
   /**
    * Updates the current customer and saves the details returned from the API in the `user` property
@@ -101,7 +92,7 @@ export interface UseUserInterface {
   /**
    * Fetches the information about the current customer and saves results from the API in the `user` property
    */
-  load(params?: UseUserLoadParams): Promise<User>;
+  load(params?: UseUserLoadParams): Promise<Customer>;
 
   /**
    * Indicates whether any of the methods is in progress
@@ -116,7 +107,7 @@ export interface UseUserInterface {
   /**
    * Main data object populated by the `load()` method and updated by other methods in this composable
    */
-  user: ComputedRef<User | null>;
+  user: ComputedRef<Customer | null>;
 
   /**
    * Indicates whether the customer is authenticated or not

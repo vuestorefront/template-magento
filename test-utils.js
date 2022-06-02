@@ -4,6 +4,7 @@ import deepmerge from 'deepmerge';
 const $t = (text) => text;
 const $n = (text) => text;
 const $fc = (text) => text;
+const $dompurify = (text) => text;
 const localePath = (path) => path;
 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 const customRender = (component, options = {}, callback = null) => render(component, deepmerge({
@@ -11,7 +12,11 @@ const customRender = (component, options = {}, callback = null) => render(compon
     $t,
     $n,
     $fc,
+    $dompurify,
     localePath,
+    $i18n: {
+      t: jest.fn((value) => value),
+    },
     $nuxt: {
       context: {
         app: {

@@ -1,3 +1,5 @@
+<!-- eslint-disable vue/multi-word-component-names -->
+<!-- name must be exactly "error.vue" - Nuxt requirement -->
 <template>
   <div class="error-page">
     <h1 v-if="error.statusCode === 404">
@@ -12,18 +14,19 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent } from '@nuxtjs/composition-api';
+import type { PropType } from '@nuxtjs/composition-api';
 import { SfButton } from '@storefront-ui/vue';
+import type { NuxtError } from '@nuxt/types';
 
 export default defineComponent({
   components: {
     SfButton,
   },
-  layout: 'error',
   props: {
     error: {
-      type: Object,
+      type: Object as PropType<NuxtError>,
       required: true,
     },
   },

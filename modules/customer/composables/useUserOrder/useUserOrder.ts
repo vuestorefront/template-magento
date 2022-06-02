@@ -1,8 +1,8 @@
-import type { Ref, DeepReadonly } from '@nuxtjs/composition-api';
+import type { Ref } from '@nuxtjs/composition-api';
 import type { ComposableFunctionArgs } from '~/composables/types';
 import type {
   Maybe,
-  CustomerOrdersQuery,
+  CustomerOrders,
   CustomerOrdersQueryVariables,
 } from '~/modules/GraphQL/types';
 
@@ -19,21 +19,21 @@ export interface UseUserOrderErrors {
 export type UseUserOrderSearchParams = ComposableFunctionArgs<CustomerOrdersQueryVariables>;
 
 /**
- * Represents the data returned from and functions available in the `useUserOrder()` composable
+ * Data and methods returned from the {@link useUserOrder|useUserOrder()} composable
  */
 export interface UseUserOrderInterface {
   /**
    * Fetches orders of the current customer
    */
-  search(params: UseUserOrderSearchParams) : Promise<Maybe<Array<CustomerOrdersQuery['customer']['orders']['items']>>>;
+  search(params: UseUserOrderSearchParams) : Promise<Maybe<CustomerOrders>>;
 
   /**
    * Indicates whether any of the methods is in progress
    */
-  loading: DeepReadonly<Ref<boolean>>;
+  loading: Readonly<Ref<boolean>>;
 
   /**
    * Contains errors from any of the composable methods
    */
-  error: DeepReadonly<Ref<UseUserOrderErrors>>;
+  error: Readonly<Ref<UseUserOrderErrors>>;
 }

@@ -202,15 +202,37 @@
         <transition name="sf-fade">
           <div v-if="totalItems">
             <SfProperty
-              :name="$t('Subtotal price')"
-              class="sf-property--full-width sf-property--large my-cart__total-price"
+              v-if="totals.subtotal !== totals.total"
+              :name="$t('Subtotal')"
+              class="sf-property--full-width sf-property--small"
             >
               <template #value>
                 <SfPrice
                   :regular="$fc(totals.subtotal)"
-                  :special="
-                    totals.subtotal <= totals.special ? '' : $fc(totals.special)
-                  "
+                  class="my-cart__subtotal-price"
+                />
+              </template>
+            </SfProperty>
+            <SfProperty
+              v-if="discount"
+              :name="$t('Discount')"
+              class="sf-property--full-width sf-property--small"
+            >
+              <template #value>
+                <SfPrice
+                  :regular="$fc(discount)"
+                  class="my-cart__discount"
+                />
+              </template>
+            </SfProperty>
+            <hr class="sf-divider">
+            <SfProperty
+              :name="$t('Order Total')"
+              class="sf-property--full-width sf-property--large my-cart__total-price"
+            >
+              <template #value>
+                <SfPrice
+                  :regular="$fc(totals.total)"
                 />
               </template>
             </SfProperty>
@@ -238,7 +260,7 @@
     </SfSidebar>
   </div>
 </template>
-<script>
+<script lang="ts">
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import {
   SfLoader,
@@ -264,16 +286,17 @@ import {
 import _debounce from 'lodash.debounce';
 import { cartGetters } from '~/getters';
 import {
-  useCart,
   useUiState,
   useUiNotification,
   useExternalCheckout,
+  useImage,
 } from '~/composables';
+import useCart from '~/modules/checkout/composables/useCart';
 import { useUser } from '~/modules/customer/composables/useUser';
 import stockStatusEnum from '~/enums/stockStatusEnum';
 import SvgImage from '~/components/General/SvgImage.vue';
+import type { ConfigurableCartItem, BundleCartItem, CartItemInterface } from '~/modules/GraphQL/types';
 import CouponCode from './CouponCode.vue';
-import { useImage } from '~/composables/index.ts';
 
 export default defineComponent({
   name: 'CartSidebar',
@@ -316,14 +339,15 @@ export default defineComponent({
         ...item,
         product: {
           ...item.product,
-          ...item.configured_variant,
+          ...[(item as ConfigurableCartItem).configured_variant ?? {}],
           original_sku: item.product.sku,
         },
       })));
     const totals = computed(() => cartGetters.getTotals(cart.value));
+    const discount = computed(() => -cartGetters.getDiscountAmount(cart.value));
     const totalItems = computed(() => cartGetters.getTotalItems(cart.value));
-    const getAttributes = (product) => product.configurable_options || [];
-    const getBundles = (product) => product.bundle_options?.map((b) => b.values).flat() || [];
+    const getAttributes = (product: ConfigurableCartItem) => product.configurable_options || [];
+    const getBundles = (product: BundleCartItem) => product.bundle_options?.map((b) => b.values).flat() || [];
     const visible = ref(false);
     const tempProduct = ref();
 
@@ -340,7 +364,7 @@ export default defineComponent({
       await router.push(`${app.localePath(redirectUrl)}`);
     };
 
-    const sendToRemove = ({ product }) => {
+    const sendToRemove = ({ product }: { product: CartItemInterface }) => {
       if (notifications.value.length > 0) {
         notifications.value[0].dismiss();
       }
@@ -349,7 +373,7 @@ export default defineComponent({
       tempProduct.value = product;
     };
 
-    const actionRemoveItem = async (product) => {
+    const actionRemoveItem = async (product: CartItemInterface) => {
       await removeItem({ product });
       visible.value = false;
 
@@ -368,7 +392,7 @@ export default defineComponent({
       (params) => updateItemQty(params),
       1000,
     );
-    const isInStock = (product) => cartGetters.getStockStatus(product) === stockStatusEnum.inStock;
+    const isInStock = (product: CartItemInterface) => cartGetters.getStockStatus(product) === stockStatusEnum.inStock;
 
     return {
       sendToRemove,
@@ -392,6 +416,7 @@ export default defineComponent({
       isInStock,
       imageSizes,
       getMagentoImage,
+      discount,
     };
   },
 });
@@ -450,10 +475,14 @@ export default defineComponent({
     margin: 0;
   }
 
+  &__subtotal, &__discount {
+    --price-font-weight: var(--font-weight--light);
+  }
+
   &__total-price {
-    --price-font-size: var(--font-size--xl);
+    --price-font-size: var(--font-size--lg);
     --price-font-weight: var(--font-weight--medium);
-    margin: 0 0 var(--spacer-base) 0;
+    margin: var(--spacer-base) 0 var(--spacer-base) 0;
   }
 }
 

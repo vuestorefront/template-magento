@@ -31,7 +31,7 @@
               rules="required|email"
             >
               <SfInput
-                v-model="form.username"
+                v-model="form.email"
                 v-e2e="'login-modal-email'"
                 :valid="!errors[0]"
                 :error-message="$t(errors[0])"
@@ -279,7 +279,7 @@
     </transition>
   </SfModal>
 </template>
-<script>
+<script lang="ts">
 import {
   ref,
   watch,
@@ -299,10 +299,12 @@ import {
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate';
 import { required, email } from 'vee-validate/dist/rules';
 import {
-  useUiState, useForgotPassword, useCart,
+  useUiState,
 } from '~/composables';
+import useCart from '~/modules/checkout/composables/useCart';
 import useWishlist from '~/modules/wishlist/composables/useWishlist';
-import { useUser } from '~/modules/customer/composables/useUser';
+import useForgotPassword from '~/modules/customer/composables/useForgotPassword';
+import useUser from '~/modules/customer/composables/useUser';
 import { customerPasswordRegExp, invalidPasswordMsg } from '~/modules/customer/helpers/passwordValidation';
 
 extend('email', {
@@ -317,8 +319,17 @@ extend('required', {
 
 extend('password', {
   message: invalidPasswordMsg,
-  validate: (value) => customerPasswordRegExp.test(value),
+  validate: (value: string) => customerPasswordRegExp.test(value),
 });
+
+type Form = {
+  username?: string,
+  email: string,
+  firstname: string,
+  lastname: string,
+  password: string,
+  recaptchaInstance?: string,
+};
 
 export default defineComponent({
   name: 'LoginModal',
@@ -333,15 +344,22 @@ export default defineComponent({
     SfBar,
   },
   setup() {
+    const emptyFormData = {
+      firstname: '',
+      lastname: '',
+      email: '',
+      password: '',
+    };
     const { isLoginModalOpen, toggleLoginModal } = useUiState();
     const isSubscribed = ref(false);
-    const form = ref({});
+    const form = ref<Form>(emptyFormData);
     const isLogin = ref(true);
     const createAccount = ref(false);
     const rememberMe = ref(false);
     const isForgotten = ref(false);
     const isThankYouAfterForgotten = ref(false);
     const userEmail = ref('');
+    // @ts-expect-error Recaptcha is not registered as a Nuxt module. Its absence is handled in the code
     const { $recaptcha, $config } = useContext();
     const isRecaptchaEnabled = ref(typeof $recaptcha !== 'undefined' && $config.isRecaptcha);
 
@@ -377,17 +395,17 @@ export default defineComponent({
 
     watch(isLoginModalOpen, () => {
       if (isLoginModalOpen) {
-        form.value = {};
+        form.value = emptyFormData;
         resetErrorValues();
       }
     });
 
-    const setIsLoginValue = (value) => {
+    const setIsLoginValue = (value: boolean) => {
       resetErrorValues();
       isLogin.value = value;
     };
 
-    const setIsForgottenValue = (value) => {
+    const setIsForgottenValue = (value: boolean) => {
       resetErrorValues();
       isForgotten.value = value;
       isLogin.value = !value;
@@ -400,7 +418,7 @@ export default defineComponent({
       toggleLoginModal();
     };
 
-    const handleForm = (fn) => async () => {
+    const handleForm = (fn: typeof register | typeof login) => async () => {
       resetErrorValues();
 
       if (isRecaptchaEnabled.value) {

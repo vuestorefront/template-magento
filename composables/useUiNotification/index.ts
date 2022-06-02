@@ -15,9 +15,9 @@ const maxVisibleNotifications = 3;
 const timeToLive = 3000;
 
 /**
- * The `useUiNotification()` composable allows showing notifications to the user.
+ * Allows managing and showing notifications to the user.
  *
- * See the {@link UseUiNotificationInterface} page for more information.
+ * See the {@link UseUiNotificationInterface} for a list of methods and values available in this composable.
  */
 export function useUiNotification(): UseUiNotificationInterface {
   const { app } = useContext();
