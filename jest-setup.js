@@ -6,8 +6,8 @@ config.stubs = {
   NuxtImg: { render(h) { return h('img'); } },
 };
 config.mocks = {
-  $t: (text) => text
-}
+  $t: (text) => text,
+};
 
 const $vsf = {
   $magento: {
@@ -23,11 +23,15 @@ const $vsf = {
 Vue.prototype.$nuxt = {
   context: {
     $vsf,
+    $fc: jest.fn((label) => label),
+    localeRoute: jest.fn(() => 'some_url'),
+    localePath: jest.fn((link) => link),
     app: {
       // $vsf intentionally doubled in context top level AND in context.app - this is the way it's in the app
       $vsf,
       $fc: jest.fn((label) => label),
       localePath: jest.fn((link) => link),
+      localeRoute: jest.fn(() => 'some_url'),
     },
     i18n: {
       t: jest.fn((label) => label),
