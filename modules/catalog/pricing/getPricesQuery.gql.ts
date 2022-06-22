@@ -1,4 +1,4 @@
-import { gql } from 'graphql-request';
+import gql from 'graphql-tag';
 
 export default gql`
   query productsList($search: String = "", $filter: ProductAttributeFilterInput, $pageSize: Int = 20, $currentPage: Int = 1, $sort: ProductAttributeSortInput) {

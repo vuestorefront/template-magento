@@ -17,7 +17,7 @@
           v-if="isShowProducts"
           class="mobile-only"
           :is-visible="isFilterSidebarOpen"
-          :cat-uid="routeData.entity_uid"
+          :cat-uid="routeData.uid"
           @close="toggleFilterSidebar"
           @reloadProducts="onReloadProducts"
         />
@@ -53,18 +53,18 @@
             @click:wishlist="addItemToWishlist"
             @click:add-to-cart="addItemToCart"
           />
-
           <div
             v-if="!$fetchState.pending"
             class="products__display-opt"
           >
             <LazyHydrate on-interaction>
-              <SfPagination
+              <CategoryPagination
                 v-show="pagination.totalPages > 1"
                 :current="pagination.currentPage"
                 :total="pagination.totalPages"
                 :visible="5"
                 class="products__pagination"
+                @click="goToPage($event)"
               />
             </LazyHydrate>
 
@@ -102,7 +102,6 @@
 <script lang="ts">
 import LazyHydrate from 'vue-lazy-hydration';
 import {
-  SfPagination,
   SfSelect,
   SfHeading,
 } from '@storefront-ui/vue';
@@ -111,6 +110,7 @@ import {
   defineComponent, onMounted, ref, ssrRef, useFetch,
 } from '@nuxtjs/composition-api';
 import { CacheTagPrefix, useCache } from '@vue-storefront/cache';
+import CategoryPagination from '~/modules/catalog/category/components/pagination/CategoryPagination.vue';
 import {
   useFacet,
   useUiHelpers,
@@ -127,8 +127,9 @@ import facetGetters from '~/modules/catalog/category/getters/facetGetters';
 
 import CategoryNavbar from '~/modules/catalog/category/components/navbar/CategoryNavbar.vue';
 import CategoryBreadcrumbs from '~/modules/catalog/category/components/breadcrumbs/CategoryBreadcrumbs.vue';
+import { isCategoryTreeRoute } from '~/modules/GraphQL/CategoryTreeRouteTypeguard';
 
-import type { EntityUrl, ProductInterface } from '~/modules/GraphQL/types';
+import type { ProductInterface, CategoryTree } from '~/modules/GraphQL/types';
 import type { SortingModel } from '~/modules/catalog/category/composables/useFacet/sortingOptions';
 import type { Pagination } from '~/composables/types';
 import type { Product } from '~/modules/catalog/product/types';
@@ -136,6 +137,7 @@ import type { Product } from '~/modules/catalog/product/types';
 export default defineComponent({
   name: 'CategoryPage',
   components: {
+    CategoryPagination,
     CategoryEmptyResults: () => import('~/modules/catalog/category/components/CategoryEmptyResults.vue'),
     CategoryFilters: () => import('~/modules/catalog/category/components/filters/CategoryFilters.vue'),
     CmsContent: () => import('~/modules/catalog/category/components/cms/CmsContent.vue'),
@@ -143,7 +145,6 @@ export default defineComponent({
     CategoryProductList: () => import('~/modules/catalog/category/components/views/CategoryProductList.vue'),
     CategoryNavbar,
     CategoryBreadcrumbs,
-    SfPagination,
     SfSelect,
     LazyHydrate,
     SfHeading,
@@ -186,16 +187,17 @@ export default defineComponent({
 
     const { activeCategory } = useTraverseCategory();
     const activeCategoryName = computed(() => activeCategory.value?.name ?? '');
-    const routeData = ref<EntityUrl>({});
+    const routeData = ref<CategoryTree | null>(null);
 
     const { fetch } = useFetch(async () => {
-      routeData.value = await resolveUrl();
+      const resolvedUrl = await resolveUrl();
+      if (isCategoryTreeRoute(resolvedUrl)) routeData.value = resolvedUrl;
 
-      const categoryId = routeData.value?.id;
+      const categoryUid = routeData.value?.uid;
 
       const [content] = await Promise.all([
-        getContentData(routeData.value?.entity_uid),
-        search({ ...uiHelpers.getFacetsFromURL(), categoryId }),
+        getContentData(routeData.value?.uid),
+        search({ ...uiHelpers.getFacetsFromURL(), category_uid: categoryUid }),
       ]);
 
       cmsContent.value = content?.cmsBlock?.content ?? '';
@@ -239,6 +241,11 @@ export default defineComponent({
       productContainerElement.value.scrollIntoView();
     };
 
+    const goToPage = (page: number) => {
+      uiHelpers.changePage(page, false);
+      fetch();
+    };
+
     return {
       isPriceLoaded,
       ...uiHelpers,
@@ -260,6 +267,7 @@ export default defineComponent({
       doChangeItemsPerPage,
       productContainerElement,
       onReloadProducts,
+      goToPage,
     };
   },
 });

@@ -1,11 +1,28 @@
 import { useContext } from '@nuxtjs/composition-api';
-import type { Variables } from 'graphql-request';
+import type { DocumentNode } from 'graphql';
+import { Logger } from '~/helpers/logger';
 
-export type Request = <DATA = any, VARIABLES extends Variables = Variables>(
-  document: string,
+export type FetchPolicy = 'cache-first' | 'network-only' | 'cache-only' | 'no-cache' | 'standby';
+
+export type Variables = {
+  [key: string]: any;
+};
+
+export type Error = {
+  message: string;
+  locations?: {
+    line: number;
+    column: number;
+  }[];
+  path?: string[];
+  extensions?: any;
+};
+
+export type Request = <DATA, VARIABLES extends Variables = Variables>(
+  request: DocumentNode,
   variables?: VARIABLES,
-  requestHeaders?: HeadersInit
-) => Promise<DATA>;
+  fetchPolicy?: FetchPolicy,
+) => Promise<{ data: DATA, errors: Error[] }>;
 
 /**
  * Data and methods returned from the {@link useApi|useApi()} composable.
@@ -58,6 +75,10 @@ export interface UseApiInterface {
   mutate: Request;
 }
 
+function getGqlString(doc: DocumentNode) {
+  return doc.loc && doc.loc.source.body;
+}
+
 /**
  * Allows executing arbitrary GraphQL queries and mutations.
  *
@@ -66,17 +87,31 @@ export interface UseApiInterface {
 export function useApi(): UseApiInterface {
   const context = useContext();
 
-  const query: Request = (
-    document,
+  // @ts-ignore
+  const query: Request = async (
+    request,
     variables,
-    headers,
-  ) => context.$graphql.query.request(document, variables, headers);
+  ) => {
+    const reqID = `id${Math.random().toString(16).slice(2)}`;
+    Logger.debug(`customQuery/request/${reqID}`, getGqlString(request));
+    const { data, errors } = await context.app.$vsf.$magento.api.customQuery({ query: request, queryVariables: variables });
+    Logger.debug(`customQuery/result/${reqID}`, { data, errors });
 
-  const mutate: Request = (
-    document,
+    return { data, errors };
+  };
+
+  // @ts-ignore
+  const mutate: Request = async (
+    request,
     variables,
-    headers,
-  ) => context.$graphql.mutation.request(document, variables, headers);
+  ) => {
+    const reqID = `id${Math.random().toString(16).slice(2)}`;
+    Logger.debug(`customQuery/request/${reqID}`, getGqlString(request));
+    const { data, errors } = await context.app.$vsf.$magento.api.customMutation({ mutation: request, mutationVariables: variables });
+    Logger.debug(`customQuery/result/${reqID}`, { data, errors });
+
+    return { data, errors };
+  };
 
   return { query, mutate };
 }

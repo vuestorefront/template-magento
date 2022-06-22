@@ -1,4 +1,4 @@
-import { gql } from 'graphql-request';
+import gql from 'graphql-tag';
 
 /**
  * GraphQL Query that fetches products using received search term and the params
