@@ -24,7 +24,6 @@
       ]
     },
     "types": [
-      "reflect-metadata",
       "node",
       "@pinia/nuxt",
       "@nuxt/types",
@@ -40,8 +39,5 @@
     "importHelpers": true,
     "allowSyntheticDefaultImports": true
   },
-  "exclude": [
-    "tests/e2e/**",
-    "**/*.spec.ts"
-  ]
+  "exclude": ["tests/e2e/**"]
 }

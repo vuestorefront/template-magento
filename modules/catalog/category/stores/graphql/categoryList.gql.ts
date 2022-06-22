@@ -1,4 +1,4 @@
-import { gql } from 'graphql-request';
+import gql from 'graphql-tag';
 
 const fragmentCategory = gql`
   fragment CategoryFields on CategoryTree {
