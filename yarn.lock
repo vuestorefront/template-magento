@@ -1988,6 +1988,11 @@
     serve-static "^1.14.1"
     workbox-cdn "^5.1.4"
 
+"@nuxtjs/recaptcha@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@nuxtjs/recaptcha/-/recaptcha-1.1.1.tgz#21f9dcd53d7b869b570ab4829404df1200ed26de"
+  integrity sha512-maHqf6x6EgfRm7lvjK7nTwle/17cRzMkeFDWPGdcdKjDnAjuli7Mei5qPG0CFZX1zG9ohIEv+0QEs7fgudyLrg==
+
 "@nuxtjs/style-resources@^1.0.0", "@nuxtjs/style-resources@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@nuxtjs/style-resources/-/style-resources-1.2.1.tgz#9a2b6580b2ed9b06e930bee488a56b8376a263de"
@@ -2449,29 +2454,20 @@
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.11.tgz#d421b6c527a3037f7c84433fd2c4229e016863d3"
   integrity sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==
 
+"@types/k6@^0.37.0":
+  version "0.37.0"
+  resolved "https://registry.yarnpkg.com/@types/k6/-/k6-0.37.0.tgz#fb357d5218c8c2b5bc197dae818eebe7085906fc"
+  integrity sha512-8ou8tK3i/8HJFiyxz9ktrT1CWvtdItlq5ybaysnnwX7wSNLZv3TdR28Q2kW9byYVJKNhuwOnoecB2oM/NytN2Q==
+
 "@types/less@3.0.2":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@types/less/-/less-3.0.2.tgz#2761d477678c8374cb9897666871662eb1d1115e"
   integrity sha512-62vfe65cMSzYaWmpmhqCMMNl0khen89w57mByPi1OseGfcV/LV03fO8YVrNj7rFQsRWNJo650WWyh6m7p8vZmA==
 
-"@types/lodash.debounce@^4.0.6":
-  version "4.0.7"
-  resolved "https://registry.yarnpkg.com/@types/lodash.debounce/-/lodash.debounce-4.0.7.tgz#0285879defb7cdb156ae633cecd62d5680eded9f"
-  integrity sha512-X1T4wMZ+gT000M2/91SYj0d/7JfeNZ9PeeOldSNoE/lunLeQXKvkmIumI29IaKMotU/ln/McOIvgzZcQ/3TrSA==
-  dependencies:
-    "@types/lodash" "*"
-
-"@types/lodash.merge@^4.6.7":
-  version "4.6.7"
-  resolved "https://registry.yarnpkg.com/@types/lodash.merge/-/lodash.merge-4.6.7.tgz#0af6555dd8bc6568ef73e5e0d820a027362946b1"
-  integrity sha512-OwxUJ9E50gw3LnAefSHJPHaBLGEKmQBQ7CZe/xflHkyy/wH2zVyEIAKReHvVrrn7zKdF58p16We9kMfh7v0RRQ==
-  dependencies:
-    "@types/lodash" "*"
-
-"@types/lodash.unescape@^4.0.7":
-  version "4.0.7"
-  resolved "https://registry.yarnpkg.com/@types/lodash.unescape/-/lodash.unescape-4.0.7.tgz#69f1cab2e755b824151346a44faeaaf93702972b"
-  integrity sha512-KGxcfHpWcOnLeK5g71YErXL6m947wQC9XfhVjENlCku85C6WxsqNIxwxpqDCpL06rY5ExQiXZH50KgJDFLzc7Q==
+"@types/lodash-es@^4.17.6":
+  version "4.17.6"
+  resolved "https://registry.yarnpkg.com/@types/lodash-es/-/lodash-es-4.17.6.tgz#c2ed4c8320ffa6f11b43eb89e9eaeec65966a0a0"
+  integrity sha512-R+zTeVUKDdfoRxpAryaQNRKk3105Rrgx2CFRClIgRGaqDTdjsm8h6IYA8ir584W3ePzkZfst5xIgDwYrlh9HLg==
   dependencies:
     "@types/lodash" "*"
 
@@ -2759,10 +2755,10 @@
     lodash-es "^4.17.15"
     vue "^2.6.11"
 
-"@vue-storefront/magento-api@^1.0.0-rc.9":
-  version "1.0.0-rc.9"
-  resolved "https://registry.yarnpkg.com/@vue-storefront/magento-api/-/magento-api-1.0.0-rc.9.tgz#3e39796d935fd8d36d3e131d64910315cbb36e9b"
-  integrity sha512-RuFfJPOQlElkoWMldwX9jF7/vmKYLedAmdm07BG3rA2A7xGMuAesYuZ8yZT7IgsaydsghGm9cB/aLl3xoRh4mQ==
+"@vue-storefront/magento-api@^1.0.0-rc.10":
+  version "1.0.0-rc.10"
+  resolved "https://registry.yarnpkg.com/@vue-storefront/magento-api/-/magento-api-1.0.0-rc.10.tgz#26abf9e7ed02be460c5c9637e2a0dbe51ce2c527"
+  integrity sha512-f7HNz9ag3ddalTZFzxHyfy+F56I6oVsNioXLHbGh2LSi2j2/lGt5kK8nIpU7uK29tvvN6fq+PtUslWtWxuVN+g==
   dependencies:
     "@apollo/client" "^3.5.8"
     agentkeepalive "^4.2.1"
@@ -9665,11 +9661,6 @@ lodash.templatesettings@^4.0.0:
   integrity sha512-stgLz+i3Aa9mZgnjr/O+v9ruKZsPsndy7qPZOchbqk2cnTU1ZaldKK+v7m54WoKIyxiuMZTKT2H81F8BeAc3ZQ==
   dependencies:
     lodash._reinterpolate "^3.0.0"
-
-lodash.unescape@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/lodash.unescape/-/lodash.unescape-4.0.1.tgz#bf2249886ce514cda112fae9218cdc065211fc9c"
-  integrity sha512-DhhGRshNS1aX6s5YdBE3njCCouPgnG29ebyHvImlZzXZf2SHgt+J08DHgytTPnpywNbO1Y8mNUFyQuIDBq2JZg==
 
 lodash.uniq@^4.5.0:
   version "4.5.0"
