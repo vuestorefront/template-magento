@@ -6,6 +6,13 @@
       :title="$t('Billing address')"
       class="sf-heading--left sf-heading--no-underline title"
     />
+    <SfHeading
+      v-if="hasSavedBillingAddress"
+      v-e2e="'shipping-heading'"
+      :level="4"
+      :title="$t('Select previously saved address')"
+      class="sf-heading--left sf-heading--no-underline form-subtitle"
+    />
     <form @submit.prevent="handleSubmit(handleAddressSubmit(reset))">
       <SfCheckbox
         v-e2e="'copy-address'"
@@ -47,6 +54,13 @@
         v-if="!sameAsShipping && isAddNewAddressFormVisible"
         class="form"
       >
+        <SfHeading
+          v-if="hasSavedBillingAddress"
+          v-e2e="'shipping-heading'"
+          :level="4"
+          :title="$t('Enter different address')"
+          class="sf-heading--left sf-heading--no-underline form-subtitle"
+        />
         <ValidationProvider
           v-slot="{ errors }"
           name="firstname"
@@ -56,7 +70,7 @@
           <SfInput
             v-e2e="'firstName'"
             :value="billingDetails.firstname"
-            label="First name"
+            :label="$t('First Name')"
             name="firstName"
             class="form__element form__element--half"
             required
@@ -74,7 +88,7 @@
           <SfInput
             v-e2e="'lastName'"
             :value="billingDetails.lastname"
-            label="Last name"
+            :label="$t('Last Name')"
             name="lastName"
             class="form__element form__element--half form__element--half-even"
             required
@@ -92,7 +106,7 @@
           <SfInput
             v-e2e="'streetName'"
             :value="billingDetails.street"
-            label="Street name"
+            :label="$t('Street Name')"
             name="streetName"
             class="form__element form__element--half"
             required
@@ -110,7 +124,7 @@
           <SfInput
             v-e2e="'apartment'"
             :value="billingDetails.apartment"
-            label="House/Apartment number"
+            :label="$t('House/Apartment number')"
             name="apartment"
             class="form__element form__element--half form__element--half-even"
             required
@@ -128,7 +142,7 @@
           <SfInput
             v-e2e="'city'"
             :value="billingDetails.city"
-            label="City"
+            :label="$t('City')"
             name="city"
             class="form__element form__element--half"
             required
@@ -149,7 +163,7 @@
             "
             v-model="billingDetails.region"
             v-e2e="'state'"
-            label="State/Province"
+            :label="$t('State/Province')"
             required
             :valid="!errors[0]"
             :error-message="$t(errors[0])"
@@ -162,7 +176,7 @@
             v-else
             v-model="billingDetails.region"
             v-e2e="'state'"
-            label="State/Province"
+            :label="$t('State/Province')"
             name="state"
             required
             :valid="!errors[0]"
@@ -189,7 +203,7 @@
           <SfSelect
             v-e2e="'country'"
             :value="billingDetails.country_code"
-            label="Country"
+            :label="$t('Country')"
             name="country"
             class="form__element form__element--half form__select sf-select--underlined"
             required
@@ -216,7 +230,7 @@
           <SfInput
             v-e2e="'zipcode'"
             :value="billingDetails.postcode"
-            label="Zip-code"
+            :label="$t('Zip-code')"
             name="zipCode"
             class="form__element form__element--half form__element--half-even"
             required
@@ -234,7 +248,7 @@
           <SfInput
             v-e2e="'phone'"
             :value="billingDetails.telephone"
-            label="Phone number"
+            :label="$t('Phone number')"
             name="phone"
             class="form__element form__element--half"
             required
@@ -403,6 +417,7 @@ export default defineComponent({
           ...billingDetails.value,
           customerAddressId: addressId === null ? null : String(addressId),
           sameAsShipping: sameAsShipping.value,
+          save_in_address_book: false,
         },
       };
       await save(billingDetailsData);
@@ -486,7 +501,7 @@ export default defineComponent({
         loadUserBilling(),
         loadCountries(),
       ]);
-      const [defaultAddress = null] = userBillingGetters.getAddresses(loadedUserBilling, { default_shipping: true });
+      const [defaultAddress = null] = userBillingGetters.getAddresses(loadedUserBilling, { default_billing: true });
       const wasBillingAddressAlreadySetOnCart = Boolean(loadedBillingInfoBoundToCart);
 
       // keep in mind default billing address is set on a customer's cart during cart creation
@@ -645,6 +660,18 @@ export default defineComponent({
     &:hover {
       color: white;
     }
+  }
+}
+
+.title, .form-subtitle {
+  margin: var(--spacer-xl) 0 var(--spacer-base) 0;
+
+}
+
+.form-subtitle {
+  width: 100%;
+  .sf-heading__title {
+    font-weight: bold;
   }
 }
 </style>
