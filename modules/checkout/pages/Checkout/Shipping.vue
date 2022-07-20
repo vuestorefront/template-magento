@@ -6,7 +6,13 @@
       :title="$t('Shipping address')"
       class="sf-heading--left sf-heading--no-underline title"
     />
-
+    <SfHeading
+      v-if="hasSavedShippingAddress"
+      v-e2e="'shipping-heading'"
+      :level="4"
+      :title="$t('Select previously saved address')"
+      class="sf-heading--left sf-heading--no-underline form-subtitle"
+    />
     <form @submit.prevent="handleSubmit(handleAddressSubmit(reset))">
       <UserShippingAddresses
         v-if="isAuthenticated && hasSavedShippingAddress"
@@ -21,6 +27,13 @@
         v-if="isAddNewAddressFormVisible"
         class="form"
       >
+        <SfHeading
+          v-if="hasSavedShippingAddress"
+          v-e2e="'shipping-heading'"
+          :level="4"
+          :title="$t('Enter different address')"
+          class="sf-heading--left sf-heading--no-underline form-subtitle"
+        />
         <ValidationProvider
           v-slot="{ errors }"
           name="firstname"
@@ -30,7 +43,7 @@
           <SfInput
             v-e2e="'shipping-firstName'"
             :value="shippingDetails.firstname"
-            label="First name"
+            :label="$t('First Name')"
             name="firstName"
             class="form__element form__element--half"
             required
@@ -48,7 +61,7 @@
           <SfInput
             v-e2e="'shipping-lastName'"
             :value="shippingDetails.lastname"
-            label="Last name"
+            :label="$t('Last Name')"
             name="lastName"
             class="form__element form__element--half form__element--half-even"
             required
@@ -66,7 +79,7 @@
           <SfInput
             v-e2e="'shipping-streetName'"
             :value="shippingDetails.street"
-            label="Street name"
+            :label="$t('Street Name')"
             name="streetName"
             class="form__element form__element--half"
             required
@@ -84,7 +97,7 @@
           <SfInput
             v-e2e="'shipping-apartment'"
             :value="shippingDetails.apartment"
-            label="House/Apartment number"
+            :label="$t('House/Apartment number')"
             name="apartment"
             class="form__element form__element--half form__element--half-even"
             required
@@ -102,7 +115,7 @@
           <SfInput
             v-e2e="'shipping-city'"
             :value="shippingDetails.city"
-            label="City"
+            :label="$t('City')"
             name="city"
             class="form__element form__element--half"
             required
@@ -127,7 +140,7 @@
             "
             v-e2e="'shipping-state'"
             :value="shippingDetails.region"
-            label="State/Province"
+            :label="$t('State/Province')"
             :disabled="!shippingDetails.country_code"
             name="state"
             class="form__element form__element--half form__element--half-even"
@@ -143,7 +156,7 @@
             v-else
             v-e2e="'shipping-state'"
             :value="shippingDetails.region"
-            label="State/Province"
+            :label="$t('State/Province')"
             name="state"
             class="form__element form__element--half form__element--half-even form__select sf-select--underlined"
             :valid="!errors[0]"
@@ -169,7 +182,7 @@
           <SfSelect
             v-e2e="'shipping-country'"
             :value="shippingDetails.country_code"
-            label="Country"
+            :label="$t('Country')"
             name="country"
             class="form__element form__element--half form__select sf-select--underlined"
             required
@@ -196,7 +209,7 @@
           <SfInput
             v-e2e="'shipping-zipcode'"
             :value="shippingDetails.postcode"
-            label="Zip-code"
+            :label="$t('Zip-code')"
             name="zipCode"
             class="form__element form__element--half form__element--half-even"
             required
@@ -214,7 +227,7 @@
           <SfInput
             v-model="shippingDetails.telephone"
             v-e2e="'shipping-phone'"
-            label="Phone number"
+            :label="$t('Phone number')"
             name="phone"
             class="form__element form__element--half"
             required
@@ -360,6 +373,7 @@ export default defineComponent({
       const shippingDetailsData = {
         ...shippingDetails.value,
         customerAddressId: addressId,
+        save_in_address_book: false,
       };
       await mergeItem('checkout', { shipping: shippingDetailsData });
 
@@ -422,7 +436,6 @@ export default defineComponent({
         loadUserShipping(),
         loadCountries(),
       ]);
-
       const [defaultAddress = null] = userShippingGetters.getAddresses(loadedUserShipping, { default_shipping: true });
       const wasShippingAddressAlreadySetOnCart = Boolean(loadedShippingInfoBoundToCart);
 
@@ -568,7 +581,15 @@ export default defineComponent({
   }
 }
 
-.title {
+.title, .form-subtitle {
   margin: var(--spacer-xl) 0 var(--spacer-base) 0;
+
+}
+
+.form-subtitle {
+  width: 100%;
+  .sf-heading__title {
+    font-weight: bold;
+  }
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <SfBottomModal
     :is-open="isLangModalOpen"
-    :title="availableStores.length > 0 ? 'Change Store' : ''"
+    :title="availableStores.length > 0 ? $t('Change Store') : ''"
     @click:close="closeModal"
   >
     <SfList v-if="availableStores.length > 1">
@@ -37,6 +37,15 @@
         </a>
       </SfListItem>
     </SfList>
+    <template #close-mobile>
+      <SfButton
+        class="sf-button--full-width sf-bottom-modal__cancel"
+        aria-label="Close"
+        @click="closeModal"
+      >
+        {{ $t('Cancel') }}
+      </SfButton>
+    </template>
   </SfBottomModal>
 </template>
 <script lang="ts">
@@ -44,6 +53,7 @@ import {
   defineComponent, onMounted, computed, PropType,
 } from '@nuxtjs/composition-api';
 import {
+  SfButton,
   SfList,
   SfBottomModal,
   SfCharacteristic,
@@ -55,6 +65,7 @@ import { AvailableStores, useStore } from '~/composables';
 export default defineComponent({
   name: 'StoresModal',
   components: {
+    SfButton,
     SfList,
     SfBottomModal,
     SfCharacteristic,
@@ -63,8 +74,8 @@ export default defineComponent({
   props: {
     isLangModalOpen: Boolean,
     storeConfig: {
-      type: Object as PropType<StoreConfig | {}>,
-      default: () => {},
+      type: Object as PropType<StoreConfig>,
+      default: (): StoreConfig => ({}),
     },
   },
   emits: ['closeModal'],

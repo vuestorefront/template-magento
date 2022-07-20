@@ -1,5 +1,5 @@
 import type { ComputedRef } from '@nuxtjs/composition-api';
-import type { StoreConfig } from '@vue-storefront/magento-api';
+import type { StoreConfig } from '~/modules/GraphQL/types';
 
 /**
  * Data and methods returned from the {@link useMagentoConfiguration|useMagentoConfiguration()} composable
