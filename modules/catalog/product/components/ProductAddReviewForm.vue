@@ -308,6 +308,10 @@ export default defineComponent({
         margin-right: 0;
         margin-bottom: 0;
       }
+      textarea {
+        box-sizing: border-box;
+        width: 100%;
+      }
     }
   }
 }
