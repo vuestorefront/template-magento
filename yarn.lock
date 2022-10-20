@@ -2836,10 +2836,15 @@
     lodash-es "^4.17.15"
     vue "^2.6.11"
 
-"@vue-storefront/magento-api@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@vue-storefront/magento-api/-/magento-api-1.0.2.tgz#ae71ce603f21122b2b9c6ceaac4fc2b312ceb5f0"
-  integrity sha512-RJ9djlhCsOAKH2UzGqkC1KGketEQZbFtfSdexp6NvBiZnf5sc1hUjkdMX0ZiKgDJc2oSLA2XZhIsPvjnhMXITQ==
+"@vue-storefront/http-cache@^2.7.1":
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/@vue-storefront/http-cache/-/http-cache-2.7.1.tgz#d33470efd404ebb24e73682707fb278d1d5d4b45"
+  integrity sha512-B5Qf39yodsS35dzKDCvLF5qgggyIFnbUq0iKc114VotLfkU68GXDFRkfE8mNhgtnjWOWAco04OmvWaxO5BI6PQ==
+
+"@vue-storefront/magento-api@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@vue-storefront/magento-api/-/magento-api-1.1.0.tgz#5fa3937732b049b661575ef86684adbacbdde9d4"
+  integrity sha512-xOfs9K/LKbm6ipuDSssaYww8fMacZA2CoL58cX7lUhMz4shD+XQoenVtTeXbT8ZW+vX44pBkZR5BdPlAln7vLw==
   dependencies:
     "@apollo/client" "^3.6.9"
     agentkeepalive "^4.2.1"
