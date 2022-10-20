@@ -2,10 +2,9 @@
 /* eslint-disable unicorn/prefer-module */
 // @core-development-only-end
 import webpack from 'webpack';
-import fs from 'fs';
-import path from 'path';
 import middleware from './middleware.config';
 import { getRoutes } from './routes';
+import { probeGoogleFontsApi, GOOGLE_FONT_API_URL } from './modules/core/GoogleFontsAPI/probeGoogleFontsApi.ts';
 
 const GoogleFontsPlugin = require('@beyonk/google-fonts-webpack-plugin');
 
@@ -27,13 +26,13 @@ const {
   },
 } = middleware;
 
-export default () => {
+export default async () => {
   const baseConfig = {
     ssr: true,
     dev: process.env.VSF_NUXT_APP_ENV !== 'production',
     server: {
       port: process.env.VSF_NUXT_APP_PORT,
-      host: '0.0.0.0',
+      host: process.env.VSF_NUXT_APP_HOST || '0.0.0.0',
     },
     head: {
       title: process.env.npm_package_name || '',
@@ -132,6 +131,14 @@ export default () => {
           },
         ],
       }],
+      ['@vue-storefront/http-cache/nuxt', {
+        default: 'max-age=300, s-maxage=3600, stale-while-revalidate=86400',
+        matchRoute: {
+          '/': 'max-age=1800, s-maxage=86400, stale-while-revalidate=86400',
+          '*/customer*': 'none',
+          '*/checkout*': 'none',
+        },
+      }],
     ],
     i18n: {
       country: 'US',
@@ -200,18 +207,6 @@ export default () => {
             lastCommit: process.env.LAST_COMMIT || '',
           }),
         }),
-        new GoogleFontsPlugin({
-          fonts: [
-            { family: 'Raleway', variants: ['300', '400', '500', '600', '700', '400italic'], display: 'swap' },
-            { family: 'Roboto', variants: ['300', '400', '500', '700', '300italic', '400italic'], display: 'swap' },
-          ],
-          name: 'fonts',
-          filename: 'fonts.css',
-          path: 'assets/fonts/',
-          local: true,
-          formats: ['eot', 'woff', 'woff2', 'ttf', 'svg'],
-          apiUrl: 'https://google-webfonts-helper.herokuapp.com/api/fonts',
-        }),
       ],
       transpile: [
         'vee-validate',
@@ -242,9 +237,11 @@ export default () => {
     env: {
       VSF_MAGENTO_GRAPHQL_URL: process.env.VSF_MAGENTO_GRAPHQL_URL,
     },
-
     publicRuntimeConfig: {
       middlewareUrl: process.env.VSF_MIDDLEWARE_URL || 'http://localhost:3000/api/',
+      ssrMiddlewareUrl: process.env.VSF_SSR_MIDDLEWARE_URL
+        || process.env.VSF_MIDDLEWARE_URL
+        || 'http://localhost:3000/api/',
     },
   };
 
@@ -286,13 +283,19 @@ export default () => {
     };
   }
 
-  if (process.env.NODE_ENV === 'development' || process.env.VSF_NUXT_APP_ENV === 'development') {
-    baseConfig.server = {
-      https: {
-        key: fs.readFileSync(path.resolve(__dirname, 'localhost-key.pem')),
-        cert: fs.readFileSync(path.resolve(__dirname, 'localhost.pem')),
-      },
-    };
+  if (await probeGoogleFontsApi()) {
+    baseConfig.build.plugins.push(new GoogleFontsPlugin({
+      fonts: [
+        { family: 'Raleway', variants: ['300', '400', '500', '600', '700', '400italic'], display: 'swap' },
+        { family: 'Roboto', variants: ['300', '400', '500', '700', '300italic', '400italic'], display: 'swap' },
+      ],
+      name: 'fonts',
+      filename: 'fonts.css',
+      path: 'assets/fonts/',
+      local: true,
+      formats: ['eot', 'woff', 'woff2', 'ttf', 'svg'],
+      apiUrl: GOOGLE_FONT_API_URL,
+    }));
   }
 
   return baseConfig;

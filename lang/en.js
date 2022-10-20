@@ -64,6 +64,7 @@ export default {
   "Go back shopping": "Go back shopping",
   "Go back to shop": "Go back to shop",
   "Go to checkout": "Go to checkout",
+  "Go to cart": "Go to cart",
   "Guarantee": "Guarantee",
   "Help": "Help",
   "Help & FAQs": "Help & FAQs",
@@ -303,4 +304,6 @@ export default {
   "Payment date":"Payment date",
   "The user password was changed successfully updated!":"The user password was changed successfully updated!",
   "The user account data was successfully updated!":"The user account data was successfully updated!",
+  "You submitted your review for moderation.": "You submitted your review for moderation.",
+  "Starting at": "Starting at",
 };
