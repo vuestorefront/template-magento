@@ -1,6 +1,11 @@
+
+
 <div align="center">
 <img src="https://user-images.githubusercontent.com/1626923/137092657-fb398d20-b592-4661-a1f9-4135db0b61d5.png" height="80px"/>  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Magento_Logo.svg/2560px-Magento_Logo.svg.png" height="80px"/>
 </div>
+
+# DEPRECATED
+**This repository is deprecated and no longer maintained. The new repository can be found [HERE](https://github.com/vuestorefront/storefront-nuxt2-magento2.git)**
 
 # Magento 2.x theme
 
